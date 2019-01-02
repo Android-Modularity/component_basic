@@ -10,7 +10,7 @@ import okhttp3.Request;
 
 /**
  * CreateAt : 2017/7/1
- * Describe : 添加全局 header
+ * Describe : 添加全局 header·
  *
  * @author chendong
  */

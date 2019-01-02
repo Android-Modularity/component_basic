@@ -8,7 +8,7 @@ import com.zfy.component.basic.app.AppDelegate;
  *
  * @author chendong
  */
-public interface IViewInit {
+public interface IViewConfig {
 
     ViewConfig getViewConfig();
 

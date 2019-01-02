@@ -52,8 +52,8 @@ public class NoLayoutMvpView<HOST extends IMvpView, P extends IMvpPresenter> imp
     }
 
     @Override
-    public void launchActivity(Intent data, int code) {
-        mHostView.launchActivity(data, code);
+    public void startPage(Intent data, int code) {
+        mHostView.startPage(data, code);
     }
 
     @NonNull
@@ -63,8 +63,8 @@ public class NoLayoutMvpView<HOST extends IMvpView, P extends IMvpPresenter> imp
     }
 
     @Override
-    public void finishUI(Intent intent, int code) {
-        mHostView.finishUI(intent, code);
+    public void finishPage(Intent intent, int code) {
+        mHostView.finishPage(intent, code);
     }
 
     @Override
@@ -75,11 +75,6 @@ public class NoLayoutMvpView<HOST extends IMvpView, P extends IMvpPresenter> imp
     @Override
     public void onDestroy() {
         mDelegate.onDestroy();
-    }
-
-    @Subscribe
-    public void ignoreEvent(AppDelegate thiz) {
-
     }
 
     @Override

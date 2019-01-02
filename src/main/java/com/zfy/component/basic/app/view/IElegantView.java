@@ -20,12 +20,12 @@ public interface IElegantView {
 
     Activity getActivity();
 
-    void launchActivity(Intent data, int code);
+    void startPage(Intent data, int code);
 
     @NonNull
     Bundle getData();
 
-    void finishUI(Intent intent, int code);
+    void finishPage(Intent intent, int code);
 
     default void post(Runnable runnable, int delay) {
         ExecutorsPool.ui(runnable, delay);

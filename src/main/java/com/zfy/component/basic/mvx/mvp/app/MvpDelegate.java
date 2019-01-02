@@ -1,16 +1,15 @@
 package com.zfy.component.basic.mvx.mvp.app;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.Service;
 import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.LifecycleRegistry;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.march.common.exts.LogX;
-import com.zfy.component.basic.ComponentX;
 import com.zfy.component.basic.app.AppDelegate;
-import com.zfy.component.basic.app.view.IViewInit;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.mvx.mvp.IMvpPresenter;
 import com.zfy.component.basic.mvx.mvp.IMvpView;
@@ -28,14 +27,9 @@ public class MvpDelegate<P extends IMvpPresenter> extends AppDelegate {
 
     private P mPresenter;
 
-    private <T extends LifecycleOwner> void attach(T obj) {
-        ComponentX.inject(obj);
-        mHost = obj;
-        mLifecycleOwner = obj;
-        mLifecycleRegistry = new LifecycleRegistry(mLifecycleOwner);
-        if (obj instanceof IViewInit && ((IViewInit) obj).getViewConfig() != null) {
-            mViewConfig = ((IViewInit) obj).getViewConfig();
-        } else {
+    @Override
+    protected void onAttachHost(Object host) {
+        if (mViewConfig == null) {
             MvpV annotation = mHost.getClass().getAnnotation(MvpV.class);
             if (annotation != null) {
                 int layout = annotation.layout();
@@ -45,14 +39,10 @@ public class MvpDelegate<P extends IMvpPresenter> extends AppDelegate {
                 }
             }
         }
-        if (mViewConfig == null) {
-            throw new IllegalStateException("require ViewConfig");
-        }
     }
 
     @Override
-    public View bindFragmentDispatch(LifecycleOwner owner, LayoutInflater inflater, ViewGroup container) {
-        attach(owner);
+    protected View onBindFragment(android.support.v4.app.Fragment owner, LayoutInflater inflater, ViewGroup container) {
         View inflate = inflater.inflate(mViewConfig.getLayout(), container, false);
         bindView(mHost, inflate);
         bindEvent();
@@ -61,21 +51,24 @@ public class MvpDelegate<P extends IMvpPresenter> extends AppDelegate {
     }
 
     @Override
-    public void bindActivityDispatch(LifecycleOwner owner) {
-        attach(owner);
+    public void onBindActivity(Activity owner) {
         ((Activity) owner).setContentView(mViewConfig.getLayout());
         bindView(mHost, null);
         bindEvent();
         init();
     }
 
+    @Override
+    protected void onBindService(Service owner) {
+        bindEvent();
+        init();
+    }
 
     @Override
-    public void bindNoLayoutViewDispatch(LifecycleOwner owner, Object binder) {
+    public void onBindNoLayout(LifecycleOwner owner, Object binder) {
         if (!(owner instanceof NoLayoutMvpView)) {
             throw new IllegalArgumentException("owner must be no layout view");
         }
-        attach(owner);
         bindView(mHost, binder);
         bindEvent();
         init();

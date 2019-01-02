@@ -8,8 +8,4 @@ package com.zfy.component.basic.app.view;
  */
 public interface IBaseView {
 
-    /**
-     * 初始化数据
-     */
-    void init();
 }

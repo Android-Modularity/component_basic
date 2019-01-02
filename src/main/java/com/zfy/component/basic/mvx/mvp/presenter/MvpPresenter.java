@@ -62,9 +62,4 @@ public abstract class MvpPresenter<R extends IRepository, V extends IMvpView> im
         Api.queue().cancelRequest(mView);
         Api.queue().cancelRequest(this);
     }
-
-    @Subscribe
-    public void ignoreEvent(MvpPresenter thiz) {
-
-    }
 }

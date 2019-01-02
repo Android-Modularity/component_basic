@@ -1,8 +1,6 @@
 package com.zfy.component.basic.mvx.mvvm.app;
 
 import android.app.Activity;
-import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
@@ -13,9 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.march.common.exts.LogX;
-import com.zfy.component.basic.ComponentX;
 import com.zfy.component.basic.app.AppDelegate;
-import com.zfy.component.basic.app.view.IViewInit;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.mvx.mvvm.BaseViewModel;
 import com.zfy.component.basic.mvx.mvvm.IBindingView;
@@ -33,14 +29,9 @@ public class MvvmDelegate<VideoModel extends BaseViewModel, VDB extends ViewData
     private VideoModel mViewModel;
     private VDB        mBinding;
 
-    private <T extends LifecycleOwner> void attach(T obj) {
-        ComponentX.inject(obj);
-        mHost = obj;
-        mLifecycleOwner = obj;
-        mLifecycleRegistry = new LifecycleRegistry(mLifecycleOwner);
-        if (obj instanceof IViewInit && ((IViewInit) obj).getViewConfig() != null) {
-            mViewConfig = ((IViewInit) obj).getViewConfig();
-        } else {
+    @Override
+    protected void onAttachHost(Object host) {
+        if (mViewConfig == null) {
             VM annotation = mHost.getClass().getAnnotation(VM.class);
             if (annotation != null) {
                 int layout = annotation.layout();
@@ -51,14 +42,10 @@ public class MvvmDelegate<VideoModel extends BaseViewModel, VDB extends ViewData
                 }
             }
         }
-        if (mViewConfig == null) {
-            throw new IllegalStateException("require ViewConfig");
-        }
     }
 
     @Override
-    public View bindFragmentDispatch(LifecycleOwner owner, LayoutInflater inflater, ViewGroup container) {
-        attach(owner);
+    public View onBindFragment(Fragment owner, LayoutInflater inflater, ViewGroup container) {
         mBinding = DataBindingUtil.inflate(inflater, mViewConfig.getLayout(), container, false);
         bindView(mHost, mBinding.getRoot());
         bindEvent();
@@ -67,16 +54,10 @@ public class MvvmDelegate<VideoModel extends BaseViewModel, VDB extends ViewData
     }
 
     @Override
-    public void bindActivityDispatch(LifecycleOwner owner) {
-        attach(owner);
+    public void onBindActivity(Activity owner) {
         mBinding = DataBindingUtil.setContentView(((Activity) owner), mViewConfig.getLayout());
         bindView(mHost, null);
         init();
-    }
-
-    @Override
-    public void bindNoLayoutViewDispatch(LifecycleOwner owner, Object host) {
-        super.bindNoLayoutViewDispatch(owner, host);
     }
 
     private void init() {

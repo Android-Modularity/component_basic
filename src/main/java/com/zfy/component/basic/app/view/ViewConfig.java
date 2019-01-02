@@ -31,6 +31,11 @@ public class ViewConfig {
         return viewConfig;
     }
 
+    public static ViewConfig makeEmpty() {
+        ViewConfig viewConfig = new ViewConfig();
+        return viewConfig;
+    }
+
 
     public int getLayout() {
         return layout;

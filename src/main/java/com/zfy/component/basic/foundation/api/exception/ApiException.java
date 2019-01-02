@@ -15,8 +15,12 @@ public class ApiException extends IllegalStateException {
     public static final int ERR_NETWORK      = 1; // 网络没有链连接
     public static final int ERR_DATA_PROCESS = 2; // 数据处理错误
 
+    public static final int TYPE_INTERCEPT = 1;
+
     private int    code;
     private String msg;
+    private int    type;
+
 
     public ApiException(String message) {
         super(message);
@@ -41,12 +45,20 @@ public class ApiException extends IllegalStateException {
         }
     }
 
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
     public static boolean handleApiException(Throwable e) {
         if (e instanceof ApiException) {
             ApiException apiException = (ApiException) e;
             switch (apiException.code) {
                 case ERR_NETWORK:
-                    ToastX.show("网络未连接");
+                    // ToastX.show("网络未连接");
                     return true;
                 default:
                     break;

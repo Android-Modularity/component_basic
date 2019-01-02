@@ -13,25 +13,36 @@ import java.util.Map;
  *
  * @author chendong
  */
-public class ApiConfig {
+public class ApiOptions {
 
     private String baseUrl;
+    private String host;
     private Map<String, String> baseUrlMap = new HashMap<>();
     private Map<String, String> headers    = new HashMap<>();
+    private Map<String, String> config     = new HashMap<>();
 
-    private ApiConfig(String baseUrl) {
+    private ApiOptions(String baseUrl) {
         if (EmptyX.isEmpty(baseUrl)) {
             throw new IllegalArgumentException();
         }
         this.baseUrl = baseUrl;
     }
 
-    public static ApiConfig create(String baseUrl) {
-        return new ApiConfig(baseUrl);
+    public static ApiOptions create(String baseUrl) {
+        return new ApiOptions(baseUrl);
+    }
+
+    public ApiOptions setHost(String host) {
+        this.host = host;
+        return this;
+    }
+
+    public String getHost() {
+        return host;
     }
 
     // 添加多 baseUrl,使用 domain 区分
-    public ApiConfig addBaseUrl(String domain, String baseUrl) {
+    public ApiOptions addBaseUrl(String domain, String baseUrl) {
         if (!EmptyX.isAnyEmpty(domain, baseUrl)) {
             this.baseUrlMap.put(domain, baseUrl);
         }
@@ -39,7 +50,7 @@ public class ApiConfig {
     }
 
     // 添加通用 header
-    public ApiConfig addHeader(String key, String value) {
+    public ApiOptions addHeader(String key, String value) {
         if (!EmptyX.isEmpty(key)) {
             this.headers.put(key, value);
         }
@@ -56,5 +67,16 @@ public class ApiConfig {
 
     public Map<String, String> getHeaders() {
         return headers;
+    }
+
+    public Map<String, String> getConfig() {
+        if (config == null) {
+            config = new HashMap<>();
+        }
+        return config;
+    }
+
+    public void setConfig(Map<String, String> config) {
+        this.config = config;
     }
 }

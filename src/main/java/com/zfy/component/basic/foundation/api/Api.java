@@ -3,7 +3,7 @@ package com.zfy.component.basic.foundation.api;
 import com.google.gson.Gson;
 import com.march.common.funcs.Consumer;
 import com.march.common.funcs.Function;
-import com.zfy.component.basic.foundation.api.config.ApiConfig;
+import com.zfy.component.basic.foundation.api.config.ApiOptions;
 import com.zfy.component.basic.foundation.api.converts.StringConvertFactory;
 import com.zfy.component.basic.foundation.api.interceptors.HeaderInterceptor;
 import com.zfy.component.basic.foundation.api.interceptors.NetWorkInterceptor;
@@ -29,22 +29,22 @@ public class Api {
 
     public static final String TAG = Api.class.getSimpleName();
 
-    public static final String DOMAIN_KEY  = "api-domain";
-    public static final String KEY_AUTH    = "Authorization";
-    public static final String KEY_CHANNEL = "Channel";
+    public static final String DOMAIN_KEY  = "api-domain"; // base url domain
+    public static final String KEY_AUTH    = "Authorization"; // token
+    public static final String KEY_CHANNEL = "Channel"; // 渠道
 
     private static Api                sInst;
     private        Map<Class, Object> mServiceMap; // 服务缓存
     private        OkHttpClient       mOkHttpClient; // client
     private        Retrofit           mRetrofit; // retrofit
-    private        ApiConfig          mApiConfig; // config
+    private        ApiOptions         mApiConfig; // config
     private        ApiQueueMgr        mApiQueueMgr; // queue
 
     private Consumer<OkHttpClient.Builder> mOkHttpInitConsumer;
     private Consumer<Retrofit.Builder>     mRetrofitConsumer;
     private Function<Object, ApiObserver>  mObserverMaker;
 
-    private Api(ApiConfig apiConfig) {
+    private Api(ApiOptions apiConfig) {
         mApiConfig = apiConfig;
         mServiceMap = new HashMap<>();
         mApiQueueMgr = new ApiQueueMgr();
@@ -54,17 +54,25 @@ public class Api {
         return sInst;
     }
 
-    public static void init(ApiConfig apiConfig) {
+    public static void init(ApiOptions apiConfig) {
         sInst = new Api(apiConfig);
     }
 
-    public static ApiConfig config() {
+    public static ApiOptions config() {
         return getInst().mApiConfig;
     }
 
     public static ApiQueueMgr queue() {
         return getInst().mApiQueueMgr;
     }
+
+    public static void cancelSelfRequest(int code) {
+        Api inst = getInst();
+        if (inst != null && queue() != null) {
+            queue().cancelRequest(code);
+        }
+    }
+
 
     @SuppressWarnings("unchecked")
     public static <S> S use(Class<S> serviceClz) {

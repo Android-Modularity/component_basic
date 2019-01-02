@@ -39,8 +39,9 @@ public class ApiObserver<D> implements Observer<D> {
         this.requestConfig = ReqConfig.create();
     }
 
+
     @Override
-    public void onSubscribe(@NonNull Disposable d) {
+    public void onSubscribe(Disposable d) {
         disposable = new Disposable() {
             @Override
             public void dispose() {
@@ -61,6 +62,9 @@ public class ApiObserver<D> implements Observer<D> {
         if (isDispose) {
             return;
         }
+        if (interceptNext(t)) {
+            return;
+        }
         if (nextConsumer != null) {
             try {
                 nextConsumer.accept(t);
@@ -70,16 +74,19 @@ public class ApiObserver<D> implements Observer<D> {
         }
     }
 
+    // 截断返回
+    public boolean interceptNext(@NonNull D d) {
+        return false;
+    }
+
     @Override
     public void onError(@NonNull Throwable e) {
         if (isDispose) {
             return;
         }
-        if (Common.exports.appConfig.DEBUG) {
-            ToastX.showLong("请求错误/数据解析时发生错误 -- " + e.getMessage());
-            e.printStackTrace();
+        if (e instanceof ApiException && ((ApiException) e).getType() == ApiException.TYPE_INTERCEPT) {
+            return;
         }
-        ApiException.handleApiException(e);
         if (errorConsumer != null) {
             try {
                 errorConsumer.accept(e);
@@ -112,7 +119,6 @@ public class ApiObserver<D> implements Observer<D> {
             }
         }
     }
-
 
     public void setNextConsumer(Consumer<D> nextConsumer) {
         this.nextConsumer = nextConsumer;

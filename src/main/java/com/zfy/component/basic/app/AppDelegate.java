@@ -1,5 +1,7 @@
 package com.zfy.component.basic.app;
 
+import android.app.Activity;
+import android.app.Service;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
@@ -7,6 +9,7 @@ import android.arch.lifecycle.LifecycleRegistry;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +17,9 @@ import android.view.ViewGroup;
 import com.march.common.able.Destroyable;
 import com.march.common.exts.EmptyX;
 import com.march.common.exts.ListX;
+import com.zfy.component.basic.ComponentX;
 import com.zfy.component.basic.app.view.IOnResultView;
+import com.zfy.component.basic.app.view.IViewConfig;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.foundation.Exts;
 import com.zfy.component.basic.mvx.mvp.IMvpView;
@@ -35,8 +40,9 @@ import io.reactivex.disposables.Disposable;
  */
 public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnResultView {
 
-    protected Bundle mBundle;
-
+    // 数据
+    protected Bundle            mBundle;
+    // 声明周期管理
     protected LifecycleOwner    mLifecycleOwner;
     protected LifecycleRegistry mLifecycleRegistry;
 
@@ -73,14 +79,21 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
         mDestroyableList.add(destroyable);
     }
 
-    public View bindFragment(AppFragment appFragment, LayoutInflater inflater, ViewGroup container) {
+    public View bindFragment(Fragment appFragment, LayoutInflater inflater, ViewGroup container) {
         mBundle = appFragment.getArguments();
-        return bindFragmentDispatch(appFragment, inflater, container);
+        attachHost(appFragment);
+        return onBindFragment(appFragment, inflater, container);
+    }
+
+    public void bindService(AppService appService) {
+        attachHost(appService);
+        onBindService(appService);
     }
 
     public void bindActivity(AppActivity appActivity) {
         mBundle = appActivity.getIntent().getExtras();
-        bindActivityDispatch(appActivity);
+        attachHost(appActivity);
+        onBindActivity(appActivity);
     }
 
     public void bindNoLayoutView(NoLayoutMvpView noLayoutMvpView, Object host) {
@@ -98,15 +111,28 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
             hostDelegate.addDestroyable(noLayoutMvpView);
             hostDelegate.addOnResultView(noLayoutMvpView);
         }
-        bindNoLayoutViewDispatch(noLayoutMvpView, host);
+        attachHost(noLayoutMvpView);
+        onBindNoLayout(noLayoutMvpView, host);
     }
 
 
-    public abstract View bindFragmentDispatch(LifecycleOwner owner, LayoutInflater inflater, ViewGroup container);
+    protected void onAttachHost(Object host) {
 
-    public abstract void bindActivityDispatch(LifecycleOwner owner);
+    }
 
-    public void bindNoLayoutViewDispatch(LifecycleOwner owner, Object host) {
+    protected View onBindFragment(Fragment owner, LayoutInflater inflater, ViewGroup container) {
+        return null;
+    }
+
+    protected void onBindActivity(Activity owner) {
+
+    }
+
+    public void onBindNoLayout(LifecycleOwner owner, Object host) {
+
+    }
+
+    protected void onBindService(Service owner) {
 
     }
 
@@ -126,17 +152,24 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
             mUnBinder = ButterKnife.bind((AppActivity) host);
         } else if (host instanceof AppFragment && binder instanceof View) {
             mUnBinder = ButterKnife.bind(host, (View) binder);
+        } else if (host instanceof AppDialogFragment && binder instanceof View) {
+            mUnBinder = ButterKnife.bind(host, (View) binder);
         } else if (host instanceof NoLayoutMvpView) {
             if (binder instanceof AppActivity) {
                 mUnBinder = ButterKnife.bind(host, (AppActivity) binder);
             } else if (binder instanceof AppFragment) {
                 mUnBinder = ButterKnife.bind(host, ((AppFragment) binder).mContentView);
+            } else if (binder instanceof AppDialogFragment) {
+                mUnBinder = ButterKnife.bind(host, ((AppDialogFragment) binder).mContentView);
             } else if (binder instanceof View) {
                 mUnBinder = ButterKnife.bind(host, (View) binder);
             }
         }
     }
 
+    /**
+     * 绑定事件
+     */
     protected void bindEvent() {
         Exts.registerEvent(mHost);
     }
@@ -172,5 +205,19 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
     @Override
     public Lifecycle getLifecycle() {
         return mLifecycleRegistry;
+    }
+
+    private <T extends LifecycleOwner> void attachHost(T host) {
+        ComponentX.inject(host);
+        mHost = host;
+        mLifecycleOwner = host;
+        mLifecycleRegistry = new LifecycleRegistry(mLifecycleOwner);
+        if (host instanceof IViewConfig && ((IViewConfig) host).getViewConfig() != null) {
+            mViewConfig = ((IViewConfig) host).getViewConfig();
+        }
+        onAttachHost(host);
+        if (mViewConfig == null) {
+            throw new IllegalStateException("require ViewConfig");
+        }
     }
 }

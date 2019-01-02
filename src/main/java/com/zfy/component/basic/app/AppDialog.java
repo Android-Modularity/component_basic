@@ -3,118 +3,82 @@ package com.zfy.component.basic.app;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDialog;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.zfy.component.basic.R;
+import com.zfy.component.basic.app.data.DialogAttr;
 import com.zfy.component.basic.foundation.Exts;
 
-import org.greenrobot.eventbus.Subscribe;
-
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 /**
  * CreateAt : 16/8/15
  * Describe : dialog基类
- * 第1次 ： 父类构造方法 -> 子类构造方法 -> initOnConstruct -> show() -> onCreated() -> initViewOnCreate()
- * 第2次 ： show()
+ * 第1次 ： 绑定视图和事件 -> initOnCreate() -> show() -> onCreate() -> setAttr() -> initShow()
+ * 第2次 ： show() -> initOnShow()
  *
+ * 仅绑定一次可在 initOnCreate() 进行
+ * 每次数据更新都进行数据绑定可在 initOnShow() 进行
  * @author chendong
  */
 public abstract class AppDialog extends AppCompatDialog {
 
+    private Bundle mArguments;
 
-    protected int MATCH = ViewGroup.LayoutParams.MATCH_PARENT;
-    protected int WRAP  = ViewGroup.LayoutParams.WRAP_CONTENT;
-
-    private Unbinder mUnBinder;
-
-    public AppDialog(Context context) {
-        this(context, R.style.dialog_theme);
+    public AppDialog(Context context, Bundle arguments) {
+        this(context, R.style.dialog_theme, arguments);
     }
 
-    public AppDialog(Context context, int theme) {
+    public AppDialog(Context context, int theme, Bundle arguments) {
         super(context, theme);
+        this.mArguments = arguments;
         setContentView(getLayoutId());
-        mUnBinder = ButterKnife.bind(this);
+        ButterKnife.bind(this);
         Exts.registerEvent(this);
-        initOnConstruct();
+        initOnCreate();
     }
 
+    // 仅在第一次 show 时调用
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initViewOnCreate();
-        setWindowParams();
+        Exts.setDialogAttributes(this, getAttr());
     }
 
-    protected abstract void initViewOnCreate();
+    // 构造方法里面调用，此时 View/Event 已经绑定
+    protected abstract void initOnCreate();
 
-    protected void initOnConstruct() {
+    // 每次 show 都会调用
+    protected abstract void initOnShow();
 
-    }
-
+    // 获取布局文件
     protected abstract int getLayoutId();
 
-    protected abstract void setWindowParams();
+    // 获取弹窗属性
+    protected abstract DialogAttr getAttr();
 
-    /* 设置从底部到中间的动画 */
-    protected void setAnimationBottomToCenter() {
-        Window window = getWindow();
-        if (window == null) {
-            return;
-        }
-        window.setWindowAnimations(R.style.dialog_anim_bottom_center);
-    }
-
-    /* 全部参数设置属性 */
-    protected void setDialogAttributes(int width, int height, float alpha, float dim, int gravity) {
-        setCancelable(true);
-        setCanceledOnTouchOutside(true);
-        Window window = getWindow();
-        if (window == null) {
-            return;
-        }
-        WindowManager.LayoutParams params = window.getAttributes();
-        // 设置布局的透明度，0为透明，1为实际颜色,该透明度会使layout里的所有空间都有透明度，不仅仅是布局最底层的view
-        params.alpha = alpha;
-        // 窗口的背景，0为透明，1为全黑
-        params.dimAmount = dim;
-        params.width = width;
-        params.height = height;
-        params.gravity = gravity;
-        window.setAttributes(params);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-    }
-
-    // 默认不透明+背景黑暗 0.6 f
-    protected void setDialogAttributes(int width, int height, int gravity) {
-        setDialogAttributes(width, height, 1f, .6f, gravity);
-    }
-
-    // 宽度 march;高度 wrap;alpha=1;dim=0.6;gravity=center
-    protected void setDialogAttributes() {
-        setDialogAttributes(MATCH, WRAP, 1f, .6f, Gravity.CENTER);
-    }
-
-    protected <V extends View> V getView(int id) {
-        return findViewById(id);
-    }
 
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-//        if (mUnBinder != null) {
-//            mUnBinder.unbind();
-//        }
         Exts.unRegisterEvent(this);
     }
 
-    @Subscribe
-    public void ignoreEvent(AppDialog dialog) {
+    public Bundle getArguments() {
+        if (mArguments == null) {
+            mArguments = new Bundle();
+        }
+        return mArguments;
+    }
+
+    @Override
+    public void show() {
+        super.show();
+        initOnShow();
+    }
+
+    // 更新数据后显示
+    public void show(Bundle arguments) {
+        this.mArguments = arguments;
+        show();
     }
 }

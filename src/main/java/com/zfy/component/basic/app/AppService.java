@@ -1,11 +1,19 @@
 package com.zfy.component.basic.app;
 
+import android.app.Activity;
 import android.app.Service;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
+import android.content.Context;
 import android.content.Intent;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 
-import com.zfy.component.basic.foundation.Exts;
+import com.march.common.mgrs.ActivityMgr;
+import com.zfy.component.basic.app.view.IElegantView;
+import com.zfy.component.basic.app.view.IViewConfig;
+import com.zfy.component.basic.app.view.ViewConfig;
+import com.zfy.component.basic.foundation.api.Api;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -15,32 +23,65 @@ import org.greenrobot.eventbus.Subscribe;
  *
  * @author chendong
  */
-public abstract class AppService extends Service {
+public abstract class AppService extends Service implements IElegantView, IViewConfig, LifecycleOwner {
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+    protected abstract void init();
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Exts.registerEvent(this);
+        getAppDelegate().bindService(this);
         init();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Exts.unRegisterEvent(this);
+        getAppDelegate().onDestroy();
+        Api.cancelSelfRequest(hashCode());
     }
 
-    @Subscribe
-    public void ignoreEvent(AppService thiz) {
 
+
+
+    @Override
+    public Context getContext() {
+        return this;
     }
 
-    protected abstract void init();
+    @Override
+    public Activity getActivity() {
+        return ActivityMgr.getInst().getTopActivity();
+    }
 
+    @Override
+    public void startPage(Intent data, int code) {
+        Activity topActivity = ActivityMgr.getInst().getTopActivity();
+        if (topActivity instanceof AppActivity) {
+            ((AppActivity) topActivity).startPage(data, code);
+        }
+    }
+
+    @NonNull
+    @Override
+    public Bundle getData() {
+        return new Bundle();
+    }
+
+    @Override
+    public void finishPage(Intent intent, int code) {
+        throw new UnsupportedOperationException("service unSupport finish UI");
+    }
+
+    @Override
+    public ViewConfig getViewConfig() {
+        return ViewConfig.makeEmpty();
+    }
+
+
+    @NonNull
+    @Override
+    public Lifecycle getLifecycle() {
+        return getAppDelegate().getLifecycle();
+    }
 }

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +12,10 @@ import android.view.ViewGroup;
 import com.march.common.funcs.Action;
 import com.zfy.component.basic.app.view.IBaseView;
 import com.zfy.component.basic.app.view.IElegantView;
-import com.zfy.component.basic.app.view.IViewInit;
+import com.zfy.component.basic.app.view.IInitFlow;
+import com.zfy.component.basic.app.view.IViewConfig;
 import com.zfy.component.basic.app.view.ViewConfig;
-
-import org.greenrobot.eventbus.Subscribe;
+import com.zfy.component.basic.foundation.Exts;
 
 /**
  * CreateAt : 2018/10/11
@@ -24,7 +23,7 @@ import org.greenrobot.eventbus.Subscribe;
  *
  * @author chendong
  */
-public abstract class AppFragment extends Fragment implements IElegantView, IViewInit, IBaseView {
+public abstract class AppFragment extends Fragment implements IElegantView, IViewConfig, IBaseView, IInitFlow {
 
     protected View       mContentView;
     protected LazyLoader mLazyLoader;
@@ -46,14 +45,25 @@ public abstract class AppFragment extends Fragment implements IElegantView, IVie
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if(preViewAttach()) {
+            return null;
+        }
         mContentView = getAppDelegate().bindFragment(this, inflater, container);
         getLazyLoader().onCreateView(inflater, container, savedInstanceState);
+        preInit();
         init();
         return mContentView;
     }
 
+    @Override
+    public boolean preViewAttach() {
+        return false;
+    }
 
-    // view init
+    @Override
+    public void preInit() {
+
+    }
 
     @Override
     public ViewConfig getViewConfig() {
@@ -67,7 +77,7 @@ public abstract class AppFragment extends Fragment implements IElegantView, IVie
     // elegant view
 
     @Override
-    public void launchActivity(Intent data, int requestCode) {
+    public void startPage(Intent data, int requestCode) {
         if (requestCode == 0) {
             startActivity(data);
         } else {
@@ -89,24 +99,10 @@ public abstract class AppFragment extends Fragment implements IElegantView, IVie
         }
     }
 
-    @Subscribe
-    public void ignoreEvent(AppDelegate thiz) {
-
-    }
 
     @Override
-    public void finishUI(Intent intent, int code) {
-        FragmentActivity activity = getActivity();
-        if (activity != null) {
-            if (activity instanceof AppActivity) {
-                ((AppActivity) activity).finishUI(intent, code);
-            } else {
-                if (intent != null) {
-                    activity.setResult(code, intent);
-                }
-                activity.finish();
-            }
-        }
+    public void finishPage(Intent intent, int code) {
+        Exts.finishPage(getActivity(), intent, code);
     }
 
 

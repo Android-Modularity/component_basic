@@ -1,40 +1,61 @@
 package com.zfy.component.basic.app;
 
-import android.arch.lifecycle.Lifecycle;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.DialogFragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
+import com.zfy.component.basic.R;
+import com.zfy.component.basic.app.data.DialogAttr;
 import com.zfy.component.basic.app.view.IBaseView;
 import com.zfy.component.basic.app.view.IElegantView;
 import com.zfy.component.basic.app.view.IInitFlow;
-import com.zfy.component.basic.app.view.IOnResultView;
 import com.zfy.component.basic.app.view.IViewConfig;
 import com.zfy.component.basic.app.view.ViewConfig;
-import com.zfy.component.basic.foundation.api.Api;
-import com.zfy.component.basic.mvx.def.AppDelegateImpl;
+import com.zfy.component.basic.foundation.Exts;
+
+import org.greenrobot.eventbus.Subscribe;
 
 /**
- * CreateAt : 2018/10/11
- * Describe :
+ * CreateAt : 16/8/15
+ * Describe : dialog fragment 基类
  *
  * @author chendong
  */
-public abstract class AppActivity extends AppCompatActivity implements IElegantView, IViewConfig, IBaseView, IInitFlow, IOnResultView {
+public abstract class AppDialogFragment extends DialogFragment implements IElegantView, IViewConfig, IBaseView, IInitFlow {
+
+    protected View mContentView;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.dialog_theme);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Exts.setDialogAttributes(getDialog(), getAttr());
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (preViewAttach()) {
-            return;
+            return null;
         }
-        getAppDelegate().bindActivity(this);
+        mContentView = getAppDelegate().bindFragment(this, inflater, container);
         preInit();
         init();
+        return mContentView;
     }
+
+    // 获取弹窗属性
+    protected abstract DialogAttr getAttr();
 
     @Override
     public boolean preViewAttach() {
@@ -54,16 +75,6 @@ public abstract class AppActivity extends AppCompatActivity implements IElegantV
     // elegant view
 
     @Override
-    public Context getContext() {
-        return this;
-    }
-
-    @Override
-    public AppActivity getActivity() {
-        return this;
-    }
-
-    @Override
     public void startPage(Intent data, int requestCode) {
         if (requestCode == 0) {
             startActivity(data);
@@ -79,25 +90,18 @@ public abstract class AppActivity extends AppCompatActivity implements IElegantV
     }
 
     @Override
-    public Lifecycle getLifecycle() {
-        return getAppDelegate().getLifecycle();
-    }
-
-
-    @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
-        getAppDelegate().onDestroy();
-        Api.cancelSelfRequest(hashCode());
+        if (getAppDelegate() != null) {
+            getAppDelegate().onDestroy();
+        }
     }
 
     @Override
     public void finishPage(Intent intent, int code) {
-        if (intent != null) {
-            setResult(code, intent);
-        }
-        finish();
+        Exts.finishPage(getActivity(), intent, code);
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
