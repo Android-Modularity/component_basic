@@ -50,9 +50,8 @@ public abstract class AppDialog2 extends AppCompatDialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LogX.e("chendong", "super.initOnCreate()");
-        setWindowParams();
         initViewOnCreate();
+        setWindowParams();
     }
 
     protected abstract void initViewOnCreate();
@@ -125,11 +124,5 @@ public abstract class AppDialog2 extends AppCompatDialog {
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         Exts.unRegisterEvent(this);
-    }
-
-    @Override
-    public void show() {
-        super.show();
-        LogX.e("chendong", "super super.show()");
     }
 }
