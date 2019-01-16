@@ -5,7 +5,6 @@ import android.app.Service;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.LifecycleRegistry;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -44,7 +43,6 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
     protected Bundle            mBundle;
     // 声明周期管理
     protected LifecycleOwner    mLifecycleOwner;
-    protected LifecycleRegistry mLifecycleRegistry;
 
     protected Object     mHost;
     protected ViewConfig mViewConfig;
@@ -55,7 +53,7 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
     private List<IOnResultView> mOnResultViews;
 
     public void addObserver(@NonNull LifecycleObserver observer) {
-        mLifecycleRegistry.addObserver(observer);
+        getLifecycle().addObserver(observer);
     }
 
     public void addOnResultView(IOnResultView view) {
@@ -77,6 +75,10 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
             mDestroyableList = new ArrayList<>();
         }
         mDestroyableList.add(destroyable);
+    }
+
+    public void onHostInit() {
+
     }
 
     public View bindFragment(Fragment appFragment, LayoutInflater inflater, ViewGroup container) {
@@ -114,7 +116,6 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
         attachHost(noLayoutMvpView);
         onBindNoLayout(noLayoutMvpView, host);
     }
-
 
     protected void onAttachHost(Object host) {
 
@@ -167,9 +168,6 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
         }
     }
 
-    /**
-     * 绑定事件
-     */
     protected void bindEvent() {
         Exts.registerEvent(mHost);
     }
@@ -204,14 +202,19 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
     @NonNull
     @Override
     public Lifecycle getLifecycle() {
-        return mLifecycleRegistry;
+        return mLifecycleOwner.getLifecycle();
     }
 
     private <T extends LifecycleOwner> void attachHost(T host) {
         ComponentX.inject(host);
         mHost = host;
         mLifecycleOwner = host;
-        mLifecycleRegistry = new LifecycleRegistry(mLifecycleOwner);
+//        Lifecycle lifecycle = host.getLifecycle();
+//        if (lifecycle instanceof LifecycleRegistry) {
+//            mLifecycleRegistry = (LifecycleRegistry) lifecycle;
+//        } else {
+//            mLifecycleRegistry = new LifecycleRegistry(host);
+//        }
         if (host instanceof IViewConfig && ((IViewConfig) host).getViewConfig() != null) {
             mViewConfig = ((IViewConfig) host).getViewConfig();
         }

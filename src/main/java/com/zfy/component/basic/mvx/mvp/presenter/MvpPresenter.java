@@ -7,8 +7,6 @@ import com.zfy.component.basic.mvx.model.IRepository;
 import com.zfy.component.basic.mvx.mvp.IMvpPresenter;
 import com.zfy.component.basic.mvx.mvp.IMvpView;
 
-import org.greenrobot.eventbus.Subscribe;
-
 /**
  * CreateAt : 2018/10/11
  * Describe : Presenter Impl
@@ -25,20 +23,14 @@ public abstract class MvpPresenter<R extends IRepository, V extends IMvpView> im
         Exts.registerEvent(this);
     }
 
-    public static <P> P attachView(Class<P> pClass, IMvpView mvpView) {
-        P presenter = Exts.newInst(pClass);
-        if (presenter instanceof MvpPresenter) {
-            ((MvpPresenter) presenter).attachView(mvpView);
-            ((MvpPresenter) presenter).init();
-        }
-        return presenter;
-    }
-
     public void attachView(V view) {
         mView = view;
     }
 
-    public abstract void init();
+    @Override
+    public void onViewInit() {
+
+    }
 
     @SuppressWarnings("unchecked")
     private R makeRepo() {

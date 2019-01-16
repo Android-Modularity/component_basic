@@ -1,6 +1,5 @@
 package com.zfy.component.basic.app;
 
-import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import com.zfy.component.basic.app.view.IOnResultView;
 import com.zfy.component.basic.app.view.IViewConfig;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.foundation.api.Api;
-import com.zfy.component.basic.mvx.def.AppDelegateImpl;
 
 /**
  * CreateAt : 2018/10/11
@@ -34,6 +32,7 @@ public abstract class AppActivity extends AppCompatActivity implements IElegantV
         getAppDelegate().bindActivity(this);
         preInit();
         init();
+        getAppDelegate().onHostInit();
     }
 
     @Override
@@ -77,12 +76,6 @@ public abstract class AppActivity extends AppCompatActivity implements IElegantV
     Bundle getData() {
         return getAppDelegate().getBundle();
     }
-
-    @Override
-    public Lifecycle getLifecycle() {
-        return getAppDelegate().getLifecycle();
-    }
-
 
     @Override
     protected void onDestroy() {

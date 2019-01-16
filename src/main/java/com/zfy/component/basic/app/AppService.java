@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Service;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.LifecycleRegistry;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,8 +16,6 @@ import com.zfy.component.basic.app.view.IViewConfig;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.foundation.api.Api;
 
-import org.greenrobot.eventbus.Subscribe;
-
 /**
  * CreateAt : 2018/10/11
  * Describe : Service
@@ -25,6 +24,8 @@ import org.greenrobot.eventbus.Subscribe;
  */
 public abstract class AppService extends Service implements IElegantView, IViewConfig, LifecycleOwner {
 
+    private LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);
+
     protected abstract void init();
 
     @Override
@@ -32,6 +33,8 @@ public abstract class AppService extends Service implements IElegantView, IViewC
         super.onCreate();
         getAppDelegate().bindService(this);
         init();
+        mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
+        getAppDelegate().onHostInit();
     }
 
     @Override
@@ -39,10 +42,8 @@ public abstract class AppService extends Service implements IElegantView, IViewC
         super.onDestroy();
         getAppDelegate().onDestroy();
         Api.cancelSelfRequest(hashCode());
+        mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY);
     }
-
-
-
 
     @Override
     public Context getContext() {
@@ -78,10 +79,9 @@ public abstract class AppService extends Service implements IElegantView, IViewC
         return ViewConfig.makeEmpty();
     }
 
-
     @NonNull
     @Override
     public Lifecycle getLifecycle() {
-        return getAppDelegate().getLifecycle();
+        return mLifecycleRegistry;
     }
 }

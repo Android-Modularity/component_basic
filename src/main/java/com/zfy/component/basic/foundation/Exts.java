@@ -28,7 +28,7 @@ public class Exts {
             try {
                 EventBus.getDefault().register(host);
             } catch (Exception e) {
-                e.printStackTrace();
+                // e.printStackTrace();
             }
         }
     }

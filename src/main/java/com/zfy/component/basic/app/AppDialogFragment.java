@@ -18,8 +18,6 @@ import com.zfy.component.basic.app.view.IViewConfig;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.foundation.Exts;
 
-import org.greenrobot.eventbus.Subscribe;
-
 /**
  * CreateAt : 16/8/15
  * Describe : dialog fragment 基类
@@ -51,6 +49,7 @@ public abstract class AppDialogFragment extends DialogFragment implements IElega
         mContentView = getAppDelegate().bindFragment(this, inflater, container);
         preInit();
         init();
+        getAppDelegate().onHostInit();
         return mContentView;
     }
 

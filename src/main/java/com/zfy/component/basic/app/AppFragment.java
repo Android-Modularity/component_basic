@@ -1,5 +1,6 @@
 package com.zfy.component.basic.app;
 
+import android.arch.lifecycle.Lifecycle;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.march.common.exts.LogX;
 import com.march.common.funcs.Action;
 import com.zfy.component.basic.app.view.IBaseView;
 import com.zfy.component.basic.app.view.IElegantView;
@@ -52,8 +54,10 @@ public abstract class AppFragment extends Fragment implements IElegantView, IVie
         getLazyLoader().onCreateView(inflater, container, savedInstanceState);
         preInit();
         init();
+        getAppDelegate().onHostInit();
         return mContentView;
     }
+
 
     @Override
     public boolean preViewAttach() {

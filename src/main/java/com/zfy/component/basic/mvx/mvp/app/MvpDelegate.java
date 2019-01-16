@@ -1,7 +1,6 @@
 package com.zfy.component.basic.mvx.mvp.app;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.Service;
 import android.arch.lifecycle.LifecycleOwner;
 import android.view.LayoutInflater;
@@ -52,7 +51,7 @@ public class MvpDelegate<P extends IMvpPresenter> extends AppDelegate {
 
     @Override
     public void onBindActivity(Activity owner) {
-        ((Activity) owner).setContentView(mViewConfig.getLayout());
+        owner.setContentView(mViewConfig.getLayout());
         bindView(mHost, null);
         bindEvent();
         init();
@@ -81,6 +80,7 @@ public class MvpDelegate<P extends IMvpPresenter> extends AppDelegate {
             try {
                 if(pClazz !=null) {
                     mPresenter = (P) pClazz.newInstance();
+                    addObserver(mPresenter);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -95,9 +95,18 @@ public class MvpDelegate<P extends IMvpPresenter> extends AppDelegate {
         }
     }
 
+    @Override
+    public void onHostInit() {
+        super.onHostInit();
+        if (getPresenter() != null) {
+            getPresenter().onViewInit();
+        }
+    }
+
     public P getPresenter() {
         return mPresenter;
     }
+
 
     @Override
     public void onDestroy() {

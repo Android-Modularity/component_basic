@@ -1,5 +1,7 @@
 package com.zfy.component.basic.mvx.mvp;
 
+import android.arch.lifecycle.LifecycleObserver;
+
 import com.march.common.able.Destroyable;
 
 /**
@@ -8,7 +10,15 @@ import com.march.common.able.Destroyable;
  *
  * @author chendong
  */
-public interface IMvpPresenter extends Destroyable {
+public interface IMvpPresenter extends Destroyable, LifecycleObserver {
 
+    /**
+     * 将会在 UI 和 事件 绑定完成后触发
+     */
+    void init();
 
+    /**
+     * 当 View 曾初始化完成
+     */
+    void onViewInit();
 }
