@@ -8,13 +8,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.march.common.able.Destroyable;
-import com.zfy.component.basic.app.AppDelegate;
 import com.zfy.component.basic.app.view.IOnResultView;
 import com.zfy.component.basic.mvx.mvp.IMvpPresenter;
 import com.zfy.component.basic.mvx.mvp.IMvpView;
-import com.zfy.component.basic.mvx.mvp.IMvpView4Extends;
-
-import org.greenrobot.eventbus.Subscribe;
+import com.zfy.component.basic.mvx.mvp.IExtendsMvpView;
 
 /**
  * CreateAt : 2018/10/9
@@ -24,15 +21,15 @@ import org.greenrobot.eventbus.Subscribe;
  *
  * @author chendong
  */
-public class NoLayoutMvpView<HOST extends IMvpView, P extends IMvpPresenter> implements IMvpView4Extends<P>, Destroyable, IOnResultView {
+public class MvpPluginView<HOST extends IMvpView, P extends IMvpPresenter> implements IExtendsMvpView<P>, Destroyable, IOnResultView {
 
     protected MvpDelegate<P> mDelegate = new MvpDelegate<>();
 
     protected HOST mHostView;
 
-    public NoLayoutMvpView(HOST view) {
+    public MvpPluginView(HOST view) {
         mHostView = view;
-        mDelegate.bindNoLayoutView(this, mHostView);
+        mDelegate.bindPluginView(this, mHostView);
     }
 
     @NonNull

@@ -6,7 +6,7 @@ package com.zfy.component.basic.mvx.mvp;
  *
  * @author chendong
  */
-public interface IMvpView4Extends<P extends IMvpPresenter> extends IMvpView {
+public interface IExtendsMvpView<P extends IMvpPresenter> extends IMvpView {
 
     P getPresenter();
 }

@@ -3,7 +3,7 @@ package com.zfy.component.basic.mvx.mvp.app;
 import com.zfy.component.basic.app.AppActivity;
 import com.zfy.component.basic.app.AppDelegate;
 import com.zfy.component.basic.mvx.mvp.IMvpPresenter;
-import com.zfy.component.basic.mvx.mvp.IMvpView4Extends;
+import com.zfy.component.basic.mvx.mvp.IExtendsMvpView;
 
 /**
  * CreateAt : 2018/10/11
@@ -11,7 +11,7 @@ import com.zfy.component.basic.mvx.mvp.IMvpView4Extends;
  *
  * @author chendong
  */
-public abstract class MvpActivity<P extends IMvpPresenter> extends AppActivity implements IMvpView4Extends<P> {
+public abstract class MvpActivity<P extends IMvpPresenter> extends AppActivity implements IExtendsMvpView<P> {
 
     protected MvpDelegate<P> mDelegate = new MvpDelegate<>();
 

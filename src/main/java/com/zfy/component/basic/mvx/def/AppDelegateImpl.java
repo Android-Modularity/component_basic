@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.zfy.component.basic.app.AppDelegate;
-import com.zfy.component.basic.mvx.mvp.app.NoLayoutMvpView;
+import com.zfy.component.basic.mvx.mvp.app.MvpPluginView;
 
 /**
  * CreateAt : 2018/9/12
@@ -47,8 +47,8 @@ public class AppDelegateImpl extends AppDelegate {
     }
 
     @Override
-    public void onBindNoLayout(LifecycleOwner owner, Object binder) {
-        if (!(owner instanceof NoLayoutMvpView)) {
+    public void onBindPlguinView(LifecycleOwner owner, Object binder) {
+        if (!(owner instanceof MvpPluginView)) {
             throw new IllegalArgumentException("owner must be no layout view");
         }
         bindView(mHost, binder);

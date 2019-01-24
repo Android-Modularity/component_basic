@@ -22,7 +22,7 @@ import com.zfy.component.basic.app.view.IViewConfig;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.foundation.Exts;
 import com.zfy.component.basic.mvx.mvp.IMvpView;
-import com.zfy.component.basic.mvx.mvp.app.NoLayoutMvpView;
+import com.zfy.component.basic.mvx.mvp.app.MvpPluginView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +98,7 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
         onBindActivity(appActivity);
     }
 
-    public void bindNoLayoutView(NoLayoutMvpView noLayoutMvpView, Object host) {
+    public void bindPluginView(MvpPluginView noLayoutMvpView, Object host) {
         if (host instanceof IMvpView) {
             mBundle = ((IMvpView) host).getData();
         }
@@ -114,7 +114,7 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
             hostDelegate.addOnResultView(noLayoutMvpView);
         }
         attachHost(noLayoutMvpView);
-        onBindNoLayout(noLayoutMvpView, host);
+        onBindPlguinView(noLayoutMvpView, host);
     }
 
     protected void onAttachHost(Object host) {
@@ -129,7 +129,7 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
 
     }
 
-    public void onBindNoLayout(LifecycleOwner owner, Object host) {
+    public void onBindPlguinView(LifecycleOwner owner, Object host) {
 
     }
 
@@ -155,7 +155,7 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
             mUnBinder = ButterKnife.bind(host, (View) binder);
         } else if (host instanceof AppDialogFragment && binder instanceof View) {
             mUnBinder = ButterKnife.bind(host, (View) binder);
-        } else if (host instanceof NoLayoutMvpView) {
+        } else if (host instanceof MvpPluginView) {
             if (binder instanceof AppActivity) {
                 mUnBinder = ButterKnife.bind(host, (AppActivity) binder);
             } else if (binder instanceof AppFragment) {

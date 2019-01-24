@@ -1,6 +1,7 @@
 package com.zfy.component.basic.mvx.mvp.presenter;
 
 import com.march.common.exts.LogX;
+import com.zfy.component.basic.app.view.IViewConfig;
 import com.zfy.component.basic.foundation.Exts;
 import com.zfy.component.basic.foundation.api.Api;
 import com.zfy.component.basic.mvx.model.IRepository;
@@ -31,6 +32,7 @@ public abstract class MvpPresenter<R extends IRepository, V extends IMvpView> im
     public void onViewInit() {
 
     }
+
 
     @SuppressWarnings("unchecked")
     private R makeRepo() {

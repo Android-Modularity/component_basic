@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 import com.zfy.component.basic.app.AppDelegate;
 import com.zfy.component.basic.app.AppService;
 import com.zfy.component.basic.mvx.mvp.IMvpPresenter;
-import com.zfy.component.basic.mvx.mvp.IMvpView4Extends;
+import com.zfy.component.basic.mvx.mvp.IExtendsMvpView;
 
 /**
  * CreateAt : 2018/11/22
@@ -15,7 +15,7 @@ import com.zfy.component.basic.mvx.mvp.IMvpView4Extends;
  *
  * @author chendong
  */
-public abstract class MvpService<P extends IMvpPresenter> extends AppService implements IMvpView4Extends<P> {
+public abstract class MvpService<P extends IMvpPresenter> extends AppService implements IExtendsMvpView<P> {
 
     private MvpDelegate<P> mAppDelegate = new MvpDelegate<>();
 

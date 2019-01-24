@@ -64,8 +64,8 @@ public class MvpDelegate<P extends IMvpPresenter> extends AppDelegate {
     }
 
     @Override
-    public void onBindNoLayout(LifecycleOwner owner, Object binder) {
-        if (!(owner instanceof NoLayoutMvpView)) {
+    public void onBindPlguinView(LifecycleOwner owner, Object binder) {
+        if (!(owner instanceof MvpPluginView)) {
             throw new IllegalArgumentException("owner must be no layout view");
         }
         bindView(mHost, binder);

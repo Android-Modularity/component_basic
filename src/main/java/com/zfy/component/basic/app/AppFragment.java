@@ -1,6 +1,5 @@
 package com.zfy.component.basic.app;
 
-import android.arch.lifecycle.Lifecycle;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.march.common.exts.LogX;
-import com.march.common.funcs.Action;
 import com.zfy.component.basic.app.view.IBaseView;
 import com.zfy.component.basic.app.view.IElegantView;
 import com.zfy.component.basic.app.view.IInitFlow;
@@ -32,7 +29,7 @@ public abstract class AppFragment extends Fragment implements IElegantView, IVie
 
     private LazyLoader getLazyLoader() {
         if (mLazyLoader == null) {
-            mLazyLoader = new LazyLoader(this, this::lazyLoad);
+            mLazyLoader = new LazyLoader(this);
         }
         return mLazyLoader;
     }
@@ -51,10 +48,12 @@ public abstract class AppFragment extends Fragment implements IElegantView, IVie
             return null;
         }
         mContentView = getAppDelegate().bindFragment(this, inflater, container);
-        getLazyLoader().onCreateView(inflater, container, savedInstanceState);
         preInit();
         init();
         getAppDelegate().onHostInit();
+        if (canLazyLoad()) {
+            getLazyLoader().onCreateView(inflater, container, savedInstanceState);
+        }
         return mContentView;
     }
 
@@ -76,6 +75,11 @@ public abstract class AppFragment extends Fragment implements IElegantView, IVie
 
     // 懒加载触发
     public void lazyLoad() {
+    }
+
+
+    public boolean canLazyLoad() {
+        return false;
     }
 
     // elegant view
@@ -126,14 +130,11 @@ public abstract class AppFragment extends Fragment implements IElegantView, IVie
     // 负责完成懒加载逻辑
     public static class LazyLoader {
 
-        private boolean  mCanLazyLoad;
-        private boolean  mIsPrepared;
-        private Fragment mFragment;
-        private Action   mLazyLoadAction;
+        private boolean     mIsPrepared;
+        private AppFragment mFragment;
 
-        public LazyLoader(Fragment fragment, Action lazyLoadAction) {
+        public LazyLoader(AppFragment fragment) {
             mFragment = fragment;
-            mLazyLoadAction = lazyLoadAction;
         }
 
         public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -143,23 +144,15 @@ public abstract class AppFragment extends Fragment implements IElegantView, IVie
         }
 
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            lazyLoadInternal();
             mIsPrepared = true;
-            mCanLazyLoad = true;
+            lazyLoadInternal();
             return null;
         }
 
         private void lazyLoadInternal() {
-            if (mFragment.getUserVisibleHint() && mIsPrepared && mCanLazyLoad) {
-                mLazyLoadAction.run();
-                mCanLazyLoad = false;
+            if (mFragment.getUserVisibleHint() && mIsPrepared && mFragment.canLazyLoad()) {
+                mFragment.lazyLoad();
             }
-        }
-
-        // 设置是否可以懒加载，默认是 true，加载一次后置为 false
-        // 如果还需要开启懒加载，手动调用开启
-        public void setLazyLoadEnable(boolean enable) {
-            mCanLazyLoad = !enable;
         }
     }
 }
