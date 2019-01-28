@@ -1,6 +1,6 @@
 package com.zfy.component.basic.app.view;
 
-import com.zfy.component.basic.app.AppDelegate;
+import com.zfy.component.basic.app.IDelegate;
 
 /**
  * CreateAt : 2018/10/11
@@ -12,5 +12,5 @@ public interface IViewConfig {
 
     ViewConfig getViewConfig();
 
-    AppDelegate getAppDelegate();
+    IDelegate getViewDelegate();
 }

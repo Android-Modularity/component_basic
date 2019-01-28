@@ -3,8 +3,8 @@ package com.zfy.component.basic.foundation.api.extend;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.march.common.exts.EmptyX;
-import com.march.common.exts.StreamX;
+import com.march.common.x.EmptyX;
+import com.march.common.x.StreamX;
 
 import java.io.File;
 

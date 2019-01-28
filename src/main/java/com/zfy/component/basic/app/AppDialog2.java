@@ -9,11 +9,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.march.common.exts.LogX;
+import com.march.common.x.LogX;
 import com.zfy.component.basic.R;
-import com.zfy.component.basic.foundation.Exts;
-
-import org.greenrobot.eventbus.Subscribe;
+import com.zfy.component.basic.foundation.X;
 
 import butterknife.ButterKnife;
 
@@ -42,7 +40,7 @@ public abstract class AppDialog2 extends AppCompatDialog {
         LogX.e("chendong", "super 构造方法");
         setContentView(getLayoutId());
         ButterKnife.bind(this);
-        Exts.registerEvent(this);
+        X.registerEvent(this);
         LogX.e("chendong", "super initOnCreate");
         initOnConstruct();
     }
@@ -123,6 +121,6 @@ public abstract class AppDialog2 extends AppCompatDialog {
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        Exts.unRegisterEvent(this);
+        X.unRegisterEvent(this);
     }
 }

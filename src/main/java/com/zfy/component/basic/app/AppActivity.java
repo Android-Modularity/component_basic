@@ -29,10 +29,10 @@ public abstract class AppActivity extends AppCompatActivity implements IElegantV
         if (preViewAttach()) {
             return;
         }
-        getAppDelegate().bindActivity(this);
+        getViewDelegate().bindActivity(this);
         preInit();
         init();
-        getAppDelegate().onHostInit();
+        getViewDelegate().onHostInit();
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class AppActivity extends AppCompatActivity implements IElegantV
     @Override
     public @NonNull
     Bundle getData() {
-        return getAppDelegate().getBundle();
+        return this.getViewDelegate().getBundle();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        getAppDelegate().onDestroy();
+        this.getViewDelegate().onDestroy();
         Api.cancelSelfRequest(hashCode());
     }
 
@@ -95,12 +95,12 @@ public abstract class AppActivity extends AppCompatActivity implements IElegantV
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        getAppDelegate().onActivityResult(requestCode, resultCode, data);
+        this.getViewDelegate().onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        getAppDelegate().onRequestPermissionsResult(requestCode, permissions, grantResults);
+        this.getViewDelegate().onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

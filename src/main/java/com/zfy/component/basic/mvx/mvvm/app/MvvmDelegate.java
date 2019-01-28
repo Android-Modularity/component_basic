@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.march.common.exts.LogX;
+import com.march.common.x.LogX;
 import com.zfy.component.basic.app.AppDelegate;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.mvx.mvvm.BaseViewModel;
@@ -30,7 +30,7 @@ public class MvvmDelegate<VideoModel extends BaseViewModel, VDB extends ViewData
     private VDB        mBinding;
 
     @Override
-    protected void onAttachHost(Object host) {
+    public void onAttachHost(Object host) {
         if (mViewConfig == null) {
             VM annotation = mHost.getClass().getAnnotation(VM.class);
             if (annotation != null) {

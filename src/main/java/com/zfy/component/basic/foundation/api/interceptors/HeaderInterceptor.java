@@ -1,7 +1,7 @@
 package com.zfy.component.basic.foundation.api.interceptors;
 
 
-import com.march.common.exts.EmptyX;
+import com.march.common.x.EmptyX;
 import com.zfy.component.basic.foundation.api.Api;
 
 import java.util.Map;

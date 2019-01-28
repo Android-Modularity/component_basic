@@ -16,7 +16,7 @@ public abstract class MvpPluginPresenter<R extends IRepository, V extends IMvpVi
     public void pluginAttachView(V view) {
         try {
             if (view instanceof IViewConfig) {
-                ((IViewConfig) view).getAppDelegate().addObserver(this);
+                ((IViewConfig) view).getViewDelegate().addObserver(this);
             }
             attachView(view);
             init();

@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.march.common.exts.LogX;
+import com.march.common.x.LogX;
 import com.zfy.component.basic.app.AppDelegate;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.mvx.mvp.IMvpPresenter;
@@ -27,7 +27,7 @@ public class MvpDelegate<P extends IMvpPresenter> extends AppDelegate {
     private P mPresenter;
 
     @Override
-    protected void onAttachHost(Object host) {
+    public void onAttachHost(Object host) {
         if (mViewConfig == null) {
             MvpV annotation = mHost.getClass().getAnnotation(MvpV.class);
             if (annotation != null) {
@@ -64,7 +64,7 @@ public class MvpDelegate<P extends IMvpPresenter> extends AppDelegate {
     }
 
     @Override
-    public void onBindPlguinView(LifecycleOwner owner, Object binder) {
+    public void onBindPluginView(LifecycleOwner owner, Object binder) {
         if (!(owner instanceof MvpPluginView)) {
             throw new IllegalArgumentException("owner must be no layout view");
         }

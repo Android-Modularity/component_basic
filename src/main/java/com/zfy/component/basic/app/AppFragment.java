@@ -14,7 +14,7 @@ import com.zfy.component.basic.app.view.IElegantView;
 import com.zfy.component.basic.app.view.IInitFlow;
 import com.zfy.component.basic.app.view.IViewConfig;
 import com.zfy.component.basic.app.view.ViewConfig;
-import com.zfy.component.basic.foundation.Exts;
+import com.zfy.component.basic.foundation.X;
 
 /**
  * CreateAt : 2018/10/11
@@ -47,10 +47,10 @@ public abstract class AppFragment extends Fragment implements IElegantView, IVie
         if(preViewAttach()) {
             return null;
         }
-        mContentView = getAppDelegate().bindFragment(this, inflater, container);
+        mContentView = getViewDelegate().bindFragment(this, inflater, container);
         preInit();
         init();
-        getAppDelegate().onHostInit();
+        getViewDelegate().onHostInit();
         if (canLazyLoad()) {
             getLazyLoader().onCreateView(inflater, container, savedInstanceState);
         }
@@ -96,36 +96,40 @@ public abstract class AppFragment extends Fragment implements IElegantView, IVie
     @Override
     public @NonNull
     Bundle getData() {
-        return getAppDelegate().getBundle();
+        return getViewDelegate().getBundle();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (getAppDelegate() != null) {
-            getAppDelegate().onDestroy();
+        if (getViewDelegate() != null) {
+            getViewDelegate().onDestroy();
         }
     }
 
 
     @Override
     public void finishPage(Intent intent, int code) {
-        Exts.finishPage(getActivity(), intent, code);
+        X.finishPage(getActivity(), intent, code);
     }
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        getAppDelegate().onActivityResult(requestCode, resultCode, data);
+        getViewDelegate().onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        getAppDelegate().onRequestPermissionsResult(requestCode, permissions, grantResults);
+        getViewDelegate().onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    @Override
+    public <T extends View> T findViewById(int id) {
+        return mContentView.findViewById(id);
+    }
 
     // 负责完成懒加载逻辑
     public static class LazyLoader {

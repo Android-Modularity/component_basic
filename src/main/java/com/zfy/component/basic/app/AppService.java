@@ -31,16 +31,16 @@ public abstract class AppService extends Service implements IElegantView, IViewC
     @Override
     public void onCreate() {
         super.onCreate();
-        getAppDelegate().bindService(this);
+        getViewDelegate().bindService(this);
         init();
         mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
-        getAppDelegate().onHostInit();
+        getViewDelegate().onHostInit();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getAppDelegate().onDestroy();
+        getViewDelegate().onDestroy();
         Api.cancelSelfRequest(hashCode());
         mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY);
     }

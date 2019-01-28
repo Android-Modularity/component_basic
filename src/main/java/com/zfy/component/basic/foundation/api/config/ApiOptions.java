@@ -1,6 +1,6 @@
 package com.zfy.component.basic.foundation.api.config;
 
-import com.march.common.exts.EmptyX;
+import com.march.common.x.EmptyX;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,7 @@
 package com.zfy.component.basic.foundation.api.interceptors;
 
 
-import com.march.common.exts.NetX;
+import com.march.common.x.NetX;
 import com.zfy.component.basic.foundation.api.exception.ApiException;
 
 import okhttp3.Request;

@@ -18,7 +18,7 @@ import org.greenrobot.eventbus.EventBus;
  *
  * @author chendong
  */
-public class Exts {
+public class X {
 
     public static void registerEvent(Object host) {
         if (host == null) {

@@ -4,6 +4,7 @@ import android.databinding.ViewDataBinding;
 
 import com.zfy.component.basic.app.AppActivity;
 import com.zfy.component.basic.app.AppDelegate;
+import com.zfy.component.basic.app.IDelegate;
 import com.zfy.component.basic.mvx.mvvm.BaseViewModel;
 import com.zfy.component.basic.mvx.mvvm.IBindingView;
 
@@ -35,7 +36,7 @@ public abstract class BindingActivity<VM extends BaseViewModel, VDB extends View
     }
 
     @Override
-    public AppDelegate getAppDelegate() {
+    public IDelegate getViewDelegate() {
         return mDelegate;
     }
 

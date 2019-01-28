@@ -7,6 +7,8 @@ import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,13 +16,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.march.common.able.Destroyable;
-import com.march.common.exts.EmptyX;
-import com.march.common.exts.ListX;
+import com.march.common.x.EmptyX;
+import com.march.common.x.ListX;
+import com.march.common.x.RecycleX;
 import com.zfy.component.basic.ComponentX;
+import com.zfy.component.basic.app.view.IBaseView;
 import com.zfy.component.basic.app.view.IOnResultView;
 import com.zfy.component.basic.app.view.IViewConfig;
 import com.zfy.component.basic.app.view.ViewConfig;
-import com.zfy.component.basic.foundation.Exts;
+import com.zfy.component.basic.foundation.X;
 import com.zfy.component.basic.mvx.mvp.IMvpView;
 import com.zfy.component.basic.mvx.mvp.app.MvpPluginView;
 
@@ -37,12 +41,14 @@ import io.reactivex.disposables.Disposable;
  *
  * @author chendong
  */
-public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnResultView {
+public abstract class AppDelegate implements IDelegate {
 
     // 数据
     protected Bundle            mBundle;
     // 声明周期管理
     protected LifecycleOwner    mLifecycleOwner;
+
+    private Handler mHandler;
 
     protected Object     mHost;
     protected ViewConfig mViewConfig;
@@ -52,10 +58,25 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
     private List<Disposable>    mDisposables;
     private List<IOnResultView> mOnResultViews;
 
+    @Override
+    public void setOnClickListener(View.OnClickListener listener, int... viewIds) {
+        for (int viewId : viewIds) {
+            View view;
+            if (mHost instanceof IBaseView) {
+                view = ((IBaseView) mHost).findViewById(viewId);
+                if (view != null) {
+                    view.setOnClickListener(listener);
+                }
+            }
+        }
+    }
+
+    @Override
     public void addObserver(@NonNull LifecycleObserver observer) {
         getLifecycle().addObserver(observer);
     }
 
+    @Override
     public void addOnResultView(IOnResultView view) {
         if (mOnResultViews == null) {
             mOnResultViews = new ArrayList<>();
@@ -63,6 +84,7 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
         mOnResultViews.add(view);
     }
 
+    @Override
     public void addDisposable(Disposable disposable) {
         if (mDisposables == null) {
             mDisposables = new ArrayList<>();
@@ -70,6 +92,7 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
         mDisposables.add(disposable);
     }
 
+    @Override
     public void addDestroyable(Destroyable destroyable) {
         if (mDestroyableList == null) {
             mDestroyableList = new ArrayList<>();
@@ -77,47 +100,53 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
         mDestroyableList.add(destroyable);
     }
 
+    @Override
     public void onHostInit() {
 
     }
 
+    @Override
     public View bindFragment(Fragment appFragment, LayoutInflater inflater, ViewGroup container) {
         mBundle = appFragment.getArguments();
         attachHost(appFragment);
         return onBindFragment(appFragment, inflater, container);
     }
 
+    @Override
     public void bindService(AppService appService) {
         attachHost(appService);
         onBindService(appService);
     }
 
+    @Override
     public void bindActivity(AppActivity appActivity) {
         mBundle = appActivity.getIntent().getExtras();
         attachHost(appActivity);
         onBindActivity(appActivity);
     }
 
+    @Override
     public void bindPluginView(MvpPluginView noLayoutMvpView, Object host) {
         if (host instanceof IMvpView) {
             mBundle = ((IMvpView) host).getData();
         }
         // NoLayoutView 绑定到 Host 生命周期等
-        AppDelegate hostDelegate = null;
+        IDelegate hostDelegate = null;
         if (host instanceof AppActivity) {
-            hostDelegate = ((AppActivity) host).getAppDelegate();
+            hostDelegate = ((AppActivity) host).getViewDelegate();
         } else if (host instanceof AppFragment) {
-            hostDelegate = ((AppFragment) host).getAppDelegate();
+            hostDelegate = ((AppFragment) host).getViewDelegate();
         }
         if (hostDelegate != null) {
             hostDelegate.addDestroyable(noLayoutMvpView);
             hostDelegate.addOnResultView(noLayoutMvpView);
         }
         attachHost(noLayoutMvpView);
-        onBindPlguinView(noLayoutMvpView, host);
+        onBindPluginView(noLayoutMvpView, host);
     }
 
-    protected void onAttachHost(Object host) {
+    @Override
+    public void onAttachHost(Object host) {
 
     }
 
@@ -129,7 +158,7 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
 
     }
 
-    public void onBindPlguinView(LifecycleOwner owner, Object host) {
+    public void onBindPluginView(LifecycleOwner owner, Object host) {
 
     }
 
@@ -137,6 +166,7 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
 
     }
 
+    @Override
     public Bundle getBundle() {
         if (mBundle == null) {
             mBundle = new Bundle();
@@ -169,12 +199,12 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
     }
 
     protected void bindEvent() {
-        Exts.registerEvent(mHost);
+        X.registerEvent(mHost);
     }
 
     @Override
     public void onDestroy() {
-        Exts.unRegisterEvent(mHost);
+        X.unRegisterEvent(mHost);
         if (mUnBinder != null) {
             mUnBinder.unbind();
             mUnBinder = null;
@@ -187,6 +217,8 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
             ListX.foreach(mDisposables, Disposable::dispose);
             mDisposables.clear();
         }
+        RecycleX.recycle(mDisposables, mDestroyableList, mOnResultViews);
+        RecycleX.recycle(mHandler);
     }
 
     @Override
@@ -209,12 +241,6 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
         ComponentX.inject(host);
         mHost = host;
         mLifecycleOwner = host;
-//        Lifecycle lifecycle = host.getLifecycle();
-//        if (lifecycle instanceof LifecycleRegistry) {
-//            mLifecycleRegistry = (LifecycleRegistry) lifecycle;
-//        } else {
-//            mLifecycleRegistry = new LifecycleRegistry(host);
-//        }
         if (host instanceof IViewConfig && ((IViewConfig) host).getViewConfig() != null) {
             mViewConfig = ((IViewConfig) host).getViewConfig();
         }
@@ -222,5 +248,18 @@ public abstract class AppDelegate implements Destroyable, LifecycleOwner, IOnRes
         if (mViewConfig == null) {
             throw new IllegalStateException("require ViewConfig");
         }
+    }
+
+    @Override
+    public Handler post(Runnable runnable, long delay) {
+        if (mHandler == null) {
+            mHandler = new Handler(Looper.getMainLooper());
+        }
+        if (Looper.getMainLooper() == Looper.myLooper() && delay == 0) {
+            runnable.run();
+        } else {
+            mHandler.postDelayed(runnable, delay);
+        }
+        return mHandler;
     }
 }

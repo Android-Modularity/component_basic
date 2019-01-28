@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.bumptech.glide.request.RequestOptions;
-import com.zfy.component.basic.service.BuildInService;
 
 
 /**
@@ -21,7 +20,7 @@ public final class ImageViewAdapters {
     @BindingAdapter(value = {"bindUri"})
     public static void bindUri(ImageView imageView, String uri) {
         if (!TextUtils.isEmpty(uri)) {
-            BuildInService.image().load(imageView.getContext(), uri, imageView);
+            // BuildInService.image().load(imageView.getContext(), uri, imageView);
         }
     }
 
@@ -33,7 +32,7 @@ public final class ImageViewAdapters {
         if (opts == null) {
             opts = new RequestOptions();
         }
-        BuildInService.image().loadGlide(imageView.getContext(), uri, imageView, opts);
+        // BuildInService.image().loadGlide(imageView.getContext(), uri, imageView, opts);
     }
 
 }

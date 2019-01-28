@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.zfy.component.basic.app.AppDelegate;
 import com.zfy.component.basic.app.AppService;
+import com.zfy.component.basic.app.IDelegate;
 import com.zfy.component.basic.mvx.mvp.IMvpPresenter;
 import com.zfy.component.basic.mvx.mvp.IExtendsMvpView;
 
@@ -31,7 +32,7 @@ public abstract class MvpService<P extends IMvpPresenter> extends AppService imp
     }
 
     @Override
-    public AppDelegate getAppDelegate() {
+    public IDelegate getViewDelegate() {
         return mAppDelegate;
     }
 }

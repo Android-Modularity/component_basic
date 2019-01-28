@@ -1,8 +1,7 @@
 package com.zfy.component.basic.mvx.mvp.presenter;
 
-import com.march.common.exts.LogX;
-import com.zfy.component.basic.app.view.IViewConfig;
-import com.zfy.component.basic.foundation.Exts;
+import com.march.common.x.LogX;
+import com.zfy.component.basic.foundation.X;
 import com.zfy.component.basic.foundation.api.Api;
 import com.zfy.component.basic.mvx.model.IRepository;
 import com.zfy.component.basic.mvx.mvp.IMvpPresenter;
@@ -21,7 +20,7 @@ public abstract class MvpPresenter<R extends IRepository, V extends IMvpView> im
 
     public MvpPresenter() {
         mRepo = makeRepo();
-        Exts.registerEvent(this);
+        X.registerEvent(this);
     }
 
     public void attachView(V view) {
@@ -41,7 +40,7 @@ public abstract class MvpPresenter<R extends IRepository, V extends IMvpView> im
             MvpP annotation = getClass().getAnnotation(MvpP.class);
             if (annotation != null) {
                 Class<R> repoClazz = annotation.repo();
-                repo = Exts.newInst(repoClazz);
+                repo = X.newInst(repoClazz);
             }
         } catch (Exception e) {
             LogX.e("no repo presenter");
@@ -52,7 +51,7 @@ public abstract class MvpPresenter<R extends IRepository, V extends IMvpView> im
 
     @Override
     public void onDestroy() {
-        Exts.unRegisterEvent(this);
+        X.unRegisterEvent(this);
         Api.queue().cancelRequest(mView);
         Api.queue().cancelRequest(this);
     }

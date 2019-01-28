@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatDialog;
 
 import com.zfy.component.basic.R;
 import com.zfy.component.basic.app.data.DialogAttr;
-import com.zfy.component.basic.foundation.Exts;
+import com.zfy.component.basic.foundation.X;
 
 import butterknife.ButterKnife;
 
@@ -33,7 +33,7 @@ public abstract class AppDialog extends AppCompatDialog {
         this.mArguments = arguments;
         setContentView(getLayoutId());
         ButterKnife.bind(this);
-        Exts.registerEvent(this);
+        X.registerEvent(this);
         initOnCreate();
     }
 
@@ -41,7 +41,7 @@ public abstract class AppDialog extends AppCompatDialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Exts.setDialogAttributes(this, getAttr());
+        X.setDialogAttributes(this, getAttr());
     }
 
     // 构造方法里面调用，此时 View/Event 已经绑定
@@ -60,7 +60,7 @@ public abstract class AppDialog extends AppCompatDialog {
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        Exts.unRegisterEvent(this);
+        X.unRegisterEvent(this);
     }
 
     public Bundle getArguments() {

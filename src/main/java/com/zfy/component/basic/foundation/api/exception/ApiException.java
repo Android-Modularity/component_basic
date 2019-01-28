@@ -1,7 +1,7 @@
 package com.zfy.component.basic.foundation.api.exception;
 
 import com.google.gson.JsonParseException;
-import com.march.common.exts.ToastX;
+import com.march.common.x.ToastX;
 
 
 /**
