@@ -1,6 +1,9 @@
 package com.zfy.component.basic.foundation.api;
 
+import android.util.LruCache;
+
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.march.common.funcs.Consumer;
 import com.march.common.funcs.Function;
 import com.zfy.component.basic.foundation.api.config.ApiOptions;
@@ -9,7 +12,6 @@ import com.zfy.component.basic.foundation.api.interceptors.HeaderInterceptor;
 import com.zfy.component.basic.foundation.api.interceptors.NetWorkInterceptor;
 import com.zfy.component.basic.foundation.api.observers.ApiObserver;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -33,12 +35,12 @@ public class Api {
     public static final String KEY_AUTH    = "Authorization"; // token
     public static final String KEY_CHANNEL = "Channel"; // 渠道
 
-    private static Api                sInst;
-    private        Map<Class, Object> mServiceMap; // 服务缓存
-    private        OkHttpClient       mOkHttpClient; // client
-    private        Retrofit           mRetrofit; // retrofit
-    private        ApiOptions         mApiConfig; // config
-    private        ApiQueueMgr        mApiQueueMgr; // queue
+    private static Api                      sInst;
+    private        LruCache<String, Object> mServiceMap; // 服务缓存
+    private        OkHttpClient             mOkHttpClient; // client
+    private        Retrofit                 mRetrofit; // retrofit
+    private        ApiOptions               mApiConfig; // config
+    private        ApiQueueMgr              mApiQueueMgr; // queue
 
     private Consumer<OkHttpClient.Builder> mOkHttpInitConsumer;
     private Consumer<Retrofit.Builder>     mRetrofitConsumer;
@@ -46,7 +48,7 @@ public class Api {
 
     private Api(ApiOptions apiConfig) {
         mApiConfig = apiConfig;
-        mServiceMap = new HashMap<>();
+        mServiceMap = new LruCache<>(10);
         mApiQueueMgr = new ApiQueueMgr();
     }
 
@@ -79,13 +81,12 @@ public class Api {
         try {
             Api inst = getInst();
             inst.ensureInitClient();
-            Object apiService = inst.mServiceMap.get(serviceClz);
+            Object apiService = inst.mServiceMap.get(serviceClz.getCanonicalName());
             if (apiService != null) {
                 return (S) apiService;
             }
             S service = inst.mRetrofit.create(serviceClz);
-            inst.mServiceMap.put(serviceClz, service);
-
+            inst.mServiceMap.put(serviceClz.getCanonicalName(), service);
             return service;
         } catch (Exception e) {
             throw new IllegalStateException();
@@ -159,6 +160,7 @@ public class Api {
         if (mRetrofitConsumer != null) {
             mRetrofitConsumer.accept(builder);
         }
+        TypeToken.getParameterized(Map.class, String.class, String.class);
         return builder.build();
     }
 

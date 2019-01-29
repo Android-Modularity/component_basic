@@ -1,9 +1,15 @@
 package com.zfy.component.basic.foundation.api.config;
 
+import com.march.common.funcs.Consumer;
+import com.march.common.funcs.Function;
 import com.march.common.x.EmptyX;
+import com.zfy.component.basic.foundation.api.observers.ApiObserver;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
 
 /**
  * CreateAt : 2018/1/12
@@ -15,11 +21,16 @@ import java.util.Map;
  */
 public class ApiOptions {
 
-    private String baseUrl;
-    private String host;
+    private String              baseUrl;
+    private String              host;
     private Map<String, String> baseUrlMap = new HashMap<>();
     private Map<String, String> headers    = new HashMap<>();
     private Map<String, String> config     = new HashMap<>();
+
+    private Consumer<OkHttpClient.Builder> mOkHttpRewriter;
+    private Consumer<Retrofit.Builder>     mRetrofitRewriter;
+    private Function<Object, ApiObserver>  mObserverFactory;
+
 
     private ApiOptions(String baseUrl) {
         if (EmptyX.isEmpty(baseUrl)) {
