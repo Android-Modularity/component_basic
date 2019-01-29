@@ -3,6 +3,7 @@ package com.zfy.component.basic.foundation.api.config;
 import com.march.common.funcs.Consumer;
 import com.march.common.funcs.Function;
 import com.march.common.x.EmptyX;
+import com.zfy.component.basic.foundation.api.IApiAnchor;
 import com.zfy.component.basic.foundation.api.observers.ApiObserver;
 
 import java.util.HashMap;
@@ -23,49 +24,18 @@ public class ApiOptions {
 
     private String              baseUrl;
     private String              host;
-    private Map<String, String> baseUrlMap = new HashMap<>();
-    private Map<String, String> headers    = new HashMap<>();
-    private Map<String, String> config     = new HashMap<>();
+    private Map<String, String> baseUrlMap;
+    private Map<String, String> headers;
 
-    private Consumer<OkHttpClient.Builder> mOkHttpRewriter;
-    private Consumer<Retrofit.Builder>     mRetrofitRewriter;
-    private Function<Object, ApiObserver>  mObserverFactory;
+    private Consumer<OkHttpClient.Builder>    okHttpRewriter;
+    private Consumer<Retrofit.Builder>        retrofitRewriter;
+    private Function<IApiAnchor, ApiObserver> observerFactory;
 
-
-    private ApiOptions(String baseUrl) {
-        if (EmptyX.isEmpty(baseUrl)) {
-            throw new IllegalArgumentException();
-        }
-        this.baseUrl = baseUrl;
-    }
-
-    public static ApiOptions create(String baseUrl) {
-        return new ApiOptions(baseUrl);
-    }
-
-    public ApiOptions setHost(String host) {
-        this.host = host;
-        return this;
+    private ApiOptions() {
     }
 
     public String getHost() {
         return host;
-    }
-
-    // 添加多 baseUrl,使用 domain 区分
-    public ApiOptions addBaseUrl(String domain, String baseUrl) {
-        if (!EmptyX.isAnyEmpty(domain, baseUrl)) {
-            this.baseUrlMap.put(domain, baseUrl);
-        }
-        return this;
-    }
-
-    // 添加通用 header
-    public ApiOptions addHeader(String key, String value) {
-        if (!EmptyX.isEmpty(key)) {
-            this.headers.put(key, value);
-        }
-        return this;
     }
 
     public String getBaseUrl() {
@@ -80,14 +50,82 @@ public class ApiOptions {
         return headers;
     }
 
-    public Map<String, String> getConfig() {
-        if (config == null) {
-            config = new HashMap<>();
-        }
-        return config;
+    public Consumer<OkHttpClient.Builder> getOkHttpRewriter() {
+        return okHttpRewriter;
     }
 
-    public void setConfig(Map<String, String> config) {
-        this.config = config;
+    public Consumer<Retrofit.Builder> getRetrofitRewriter() {
+        return retrofitRewriter;
     }
+
+    public Function<IApiAnchor, ApiObserver> getObserverFactory() {
+        return observerFactory;
+    }
+
+    public static class Builder {
+
+        private String              baseUrl;
+        private String              host;
+        private Map<String, String> baseUrlMap = new HashMap<>();
+        private Map<String, String> headers    = new HashMap<>();
+
+        private Consumer<OkHttpClient.Builder>    okHttpRewriter;
+        private Consumer<Retrofit.Builder>        retrofitRewriter;
+        private Function<IApiAnchor, ApiObserver> observerFactory;
+
+
+        public ApiOptions build() {
+            ApiOptions options = new ApiOptions();
+            options.baseUrl = baseUrl;
+            options.host = host;
+            options.headers = headers;
+            options.baseUrlMap = baseUrlMap;
+            options.okHttpRewriter = okHttpRewriter;
+            options.retrofitRewriter = retrofitRewriter;
+            options.observerFactory = observerFactory;
+            return options;
+        }
+
+        public Builder(String baseUrl) {
+            this.baseUrl = baseUrl;
+        }
+
+        public Builder host(String host) {
+            this.host = host;
+            return this;
+        }
+
+
+        // 添加多 baseUrl,使用 domain 区分
+        public Builder addBaseUrl(String domain, String baseUrl) {
+            if (!EmptyX.isAnyEmpty(domain, baseUrl)) {
+                this.baseUrlMap.put(domain, baseUrl);
+            }
+            return this;
+        }
+
+        // 添加通用 header
+        public Builder addHeader(String key, String value) {
+            if (!EmptyX.isEmpty(key)) {
+                this.headers.put(key, value);
+            }
+            return this;
+        }
+
+        public Builder rewriteOkHttp(Consumer<OkHttpClient.Builder> okHttpRewriter) {
+            this.okHttpRewriter = okHttpRewriter;
+            return this;
+        }
+
+        public Builder rewriteRetrofit(Consumer<Retrofit.Builder> retrofitRewriter) {
+            this.retrofitRewriter = retrofitRewriter;
+            return this;
+        }
+
+        public Builder observerFactory(Function<IApiAnchor, ApiObserver> observerFactory) {
+            this.observerFactory = observerFactory;
+            return this;
+        }
+    }
+
 }

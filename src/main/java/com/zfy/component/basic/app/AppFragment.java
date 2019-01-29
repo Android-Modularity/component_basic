@@ -15,6 +15,7 @@ import com.zfy.component.basic.app.view.IInitFlow;
 import com.zfy.component.basic.app.view.IViewConfig;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.foundation.X;
+import com.zfy.component.basic.foundation.api.IApiAnchor;
 
 /**
  * CreateAt : 2018/10/11
@@ -22,7 +23,8 @@ import com.zfy.component.basic.foundation.X;
  *
  * @author chendong
  */
-public abstract class AppFragment extends Fragment implements IElegantView, IViewConfig, IBaseView, IInitFlow {
+public abstract class AppFragment extends Fragment
+        implements IElegantView, IViewConfig, IBaseView, IInitFlow,IApiAnchor {
 
     protected View       mContentView;
     protected LazyLoader mLazyLoader;
@@ -97,6 +99,11 @@ public abstract class AppFragment extends Fragment implements IElegantView, IVie
     public @NonNull
     Bundle getData() {
         return getViewDelegate().getBundle();
+    }
+
+    @Override
+    public int uniqueKey() {
+        return hashCode();
     }
 
     @Override

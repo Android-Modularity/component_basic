@@ -2,7 +2,6 @@ package com.zfy.component.basic.mvx.mvp.presenter;
 
 import com.march.common.x.LogX;
 import com.zfy.component.basic.foundation.X;
-import com.zfy.component.basic.foundation.api.Api;
 import com.zfy.component.basic.mvx.model.IRepository;
 import com.zfy.component.basic.mvx.mvp.IMvpPresenter;
 import com.zfy.component.basic.mvx.mvp.IMvpView;
@@ -50,9 +49,12 @@ public abstract class MvpPresenter<R extends IRepository, V extends IMvpView> im
     }
 
     @Override
+    public int uniqueKey() {
+        return mView.uniqueKey();
+    }
+
+    @Override
     public void onDestroy() {
         X.unRegisterEvent(this);
-        Api.queue().cancelRequest(mView);
-        Api.queue().cancelRequest(this);
     }
 }

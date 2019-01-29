@@ -15,6 +15,7 @@ import com.zfy.component.basic.app.view.IElegantView;
 import com.zfy.component.basic.app.view.IViewConfig;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.foundation.api.Api;
+import com.zfy.component.basic.foundation.api.IApiAnchor;
 
 /**
  * CreateAt : 2018/10/11
@@ -22,7 +23,7 @@ import com.zfy.component.basic.foundation.api.Api;
  *
  * @author chendong
  */
-public abstract class AppService extends Service implements IElegantView, IViewConfig, LifecycleOwner {
+public abstract class AppService extends Service implements IElegantView, IViewConfig, LifecycleOwner, IApiAnchor {
 
     private LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);
 
@@ -41,7 +42,6 @@ public abstract class AppService extends Service implements IElegantView, IViewC
     public void onDestroy() {
         super.onDestroy();
         getViewDelegate().onDestroy();
-        Api.cancelSelfRequest(hashCode());
         mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY);
     }
 
@@ -84,4 +84,10 @@ public abstract class AppService extends Service implements IElegantView, IViewC
     public Lifecycle getLifecycle() {
         return mLifecycleRegistry;
     }
+
+    @Override
+    public int uniqueKey() {
+        return hashCode();
+    }
+
 }

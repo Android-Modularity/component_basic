@@ -17,66 +17,84 @@ public class ApiQueueMgr implements IMgr {
 
     private SparseArray<ListCompositeDisposable> mDisposableMap;
 
-    public ApiQueueMgr() {
+    ApiQueueMgr() {
         mDisposableMap = new SparseArray<>();
     }
 
-
-    // 添加一个请求
-    public void addRequest(Object host, Disposable disposable) {
-        addRequest(host.hashCode(), disposable);
+    private boolean checkAnchor(IApiAnchor anchor, Disposable disposable) {
+        if (disposable == null) {
+            return true;
+        }
+        if (anchor == null) {
+            disposable.dispose();
+            return true;
+        }
+        return false;
     }
 
-    public void addRequest(int tag, Disposable disposable) {
-        if (tag <= 0) {
+    public void addRequest(IApiAnchor anchor, Disposable disposable) {
+        if (checkAnchor(anchor, disposable)) {
             return;
         }
-        ListCompositeDisposable disposableContainer = mDisposableMap.get(tag);
+        if (mDisposableMap.size() == 0) {
+            return;
+        }
+        int key = anchor.uniqueKey();
+        ListCompositeDisposable disposableContainer = mDisposableMap.get(key);
         if (disposableContainer == null) {
             disposableContainer = new ListCompositeDisposable();
-            mDisposableMap.put(tag, disposableContainer);
+            mDisposableMap.put(key, disposableContainer);
         }
         disposableContainer.add(disposable);
     }
 
-    // 删除一个请求成功或失败的请求
-    public void removeRequest(Object host, Disposable disposable) {
-        removeRequest(host.hashCode(), disposable);
-    }
 
-    public void removeRequest(int tag, Disposable disposable) {
-        if (tag <= 0) {
+    public void removeRequest(IApiAnchor anchor, Disposable disposable) {
+        if (checkAnchor(anchor, disposable)) {
             return;
         }
-        ListCompositeDisposable disposableContainer = mDisposableMap.get(tag);
+        if (mDisposableMap.size() == 0) {
+            return;
+        }
+        int key = anchor.uniqueKey();
         if (!disposable.isDisposed()) {
             disposable.dispose();
         }
-        disposableContainer.delete(disposable);
-    }
-
-    public void cancelRequest(Object host) {
-        cancelRequest(host.hashCode());
+        ListCompositeDisposable disposableContainer = mDisposableMap.get(key);
+        if (disposableContainer != null) {
+            disposableContainer.delete(disposable);
+        }
     }
 
     // 取消指定 tag 的请求
-    public void cancelRequest(int tag) {
-        if (tag <= 0) {
+    public void cancelRequest(IApiAnchor anchor) {
+        if (mDisposableMap.size() == 0) {
             return;
         }
-        ListCompositeDisposable disposableContainer = mDisposableMap.get(tag);
+        int key = anchor.uniqueKey();
+        ListCompositeDisposable disposableContainer = mDisposableMap.get(key);
         if (disposableContainer != null) {
             if (!disposableContainer.isDisposed()) {
                 disposableContainer.dispose();
             }
-            mDisposableMap.remove(tag);
+            mDisposableMap.remove(key);
         }
     }
 
     // 取消所有请求
     public void cancelAllRequest() {
+        if (mDisposableMap.size() == 0) {
+            return;
+        }
         for (int i = 0; i < mDisposableMap.size(); i++) {
-            cancelRequest(mDisposableMap.keyAt(i));
+            int key = mDisposableMap.keyAt(i);
+            ListCompositeDisposable disposableContainer = mDisposableMap.get(key);
+            if (disposableContainer != null) {
+                if (!disposableContainer.isDisposed()) {
+                    disposableContainer.dispose();
+                }
+                mDisposableMap.remove(key);
+            }
         }
     }
 

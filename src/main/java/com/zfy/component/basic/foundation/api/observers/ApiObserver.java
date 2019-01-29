@@ -2,8 +2,11 @@ package com.zfy.component.basic.foundation.api.observers;
 
 
 import com.zfy.component.basic.foundation.api.Api;
+import com.zfy.component.basic.foundation.api.IApiAnchor;
 import com.zfy.component.basic.foundation.api.config.ReqConfig;
 import com.zfy.component.basic.foundation.api.exception.ApiException;
+
+import java.lang.ref.WeakReference;
 
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
@@ -32,8 +35,11 @@ public class ApiObserver<D> implements Observer<D> {
 
     private boolean isDispose;
 
-    public ApiObserver(Object host) {
-        this.tag = host.hashCode();
+    private WeakReference<IApiAnchor> anchor;
+
+    public ApiObserver(IApiAnchor host) {
+        this.anchor = new WeakReference<>(host);
+        this.tag = host.uniqueKey();
         this.requestConfig = ReqConfig.create();
     }
 
@@ -52,7 +58,7 @@ public class ApiObserver<D> implements Observer<D> {
                 return d.isDisposed();
             }
         };
-        Api.queue().addRequest(tag, disposable);
+        Api.queue().addRequest(anchor.get(), disposable);
     }
 
     @Override
@@ -105,7 +111,7 @@ public class ApiObserver<D> implements Observer<D> {
 
     // onError or onComplete
     protected void onFinish() {
-        Api.queue().removeRequest(tag, disposable);
+        Api.queue().removeRequest(anchor.get(), disposable);
         if (isDispose) {
             return;
         }

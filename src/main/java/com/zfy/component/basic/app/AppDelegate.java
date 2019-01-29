@@ -25,6 +25,8 @@ import com.zfy.component.basic.app.view.IOnResultView;
 import com.zfy.component.basic.app.view.IViewConfig;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.foundation.X;
+import com.zfy.component.basic.foundation.api.Api;
+import com.zfy.component.basic.foundation.api.IApiAnchor;
 import com.zfy.component.basic.mvx.mvp.IMvpView;
 import com.zfy.component.basic.mvx.mvp.app.MvpPluginView;
 
@@ -58,18 +60,6 @@ public abstract class AppDelegate implements IDelegate {
     private List<Disposable>    mDisposables;
     private List<IOnResultView> mOnResultViews;
 
-    @Override
-    public void setOnClickListener(View.OnClickListener listener, int... viewIds) {
-        for (int viewId : viewIds) {
-            View view;
-            if (mHost instanceof IBaseView) {
-                view = ((IBaseView) mHost).findViewById(viewId);
-                if (view != null) {
-                    view.setOnClickListener(listener);
-                }
-            }
-        }
-    }
 
     @Override
     public void addObserver(@NonNull LifecycleObserver observer) {
@@ -101,6 +91,19 @@ public abstract class AppDelegate implements IDelegate {
     }
 
     @Override
+    public void clickView(View.OnClickListener listener, int... viewIds) {
+        for (int viewId : viewIds) {
+            View view;
+            if (mHost instanceof IBaseView) {
+                view = ((IBaseView) mHost).findViewById(viewId);
+                if (view != null) {
+                    view.setOnClickListener(listener);
+                }
+            }
+        }
+    }
+
+    @Override
     public void onHostInit() {
 
     }
@@ -126,7 +129,7 @@ public abstract class AppDelegate implements IDelegate {
     }
 
     @Override
-    public void bindPluginView(MvpPluginView noLayoutMvpView, Object host) {
+    public void bindPluginView(MvpPluginView mvpPluginView, Object host) {
         if (host instanceof IMvpView) {
             mBundle = ((IMvpView) host).getData();
         }
@@ -138,16 +141,84 @@ public abstract class AppDelegate implements IDelegate {
             hostDelegate = ((AppFragment) host).getViewDelegate();
         }
         if (hostDelegate != null) {
-            hostDelegate.addDestroyable(noLayoutMvpView);
-            hostDelegate.addOnResultView(noLayoutMvpView);
+            hostDelegate.addDestroyable(mvpPluginView);
+            hostDelegate.addOnResultView(mvpPluginView);
         }
-        attachHost(noLayoutMvpView);
-        onBindPluginView(noLayoutMvpView, host);
+        attachHost(mvpPluginView);
+        onBindPluginView(mvpPluginView, host);
     }
 
     @Override
     public void onAttachHost(Object host) {
 
+    }
+
+
+    @Override
+    public Bundle getBundle() {
+        if (mBundle == null) {
+            mBundle = new Bundle();
+        }
+        return mBundle;
+    }
+
+    @Override
+    public void onDestroy() {
+        X.unRegisterEvent(mHost);
+        if (mUnBinder != null) {
+            mUnBinder.unbind();
+            mUnBinder = null;
+        }
+        if (!EmptyX.isEmpty(mDestroyableList)) {
+            ListX.foreach(mDestroyableList, Destroyable::onDestroy);
+            mDestroyableList.clear();
+        }
+        if (!EmptyX.isEmpty(mDisposables)) {
+            ListX.foreach(mDisposables, Disposable::dispose);
+            mDisposables.clear();
+        }
+        RecycleX.recycle(mDisposables, mDestroyableList, mOnResultViews);
+        RecycleX.recycle(mHandler);
+        Api.queue().cancelRequest(this);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        ListX.foreach(mOnResultViews, view -> view.onRequestPermissionsResult(requestCode, permissions, grantResults));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        ListX.foreach(mOnResultViews, view -> view.onActivityResult(requestCode, resultCode, data));
+    }
+
+    @NonNull
+    @Override
+    public Lifecycle getLifecycle() {
+        return mLifecycleOwner.getLifecycle();
+    }
+
+
+    @Override
+    public Handler post(Runnable runnable, long delay) {
+        if (mHandler == null) {
+            mHandler = new Handler(Looper.getMainLooper());
+        }
+        if (Looper.getMainLooper() == Looper.myLooper() && delay == 0) {
+            runnable.run();
+        } else {
+            mHandler.postDelayed(runnable, delay);
+        }
+        return mHandler;
+    }
+
+    @Override
+    public int uniqueKey() {
+        if (mHost instanceof IApiAnchor) {
+            return ((IApiAnchor) mHost).uniqueKey();
+        } else {
+            return mHost.hashCode();
+        }
     }
 
     protected View onBindFragment(Fragment owner, LayoutInflater inflater, ViewGroup container) {
@@ -164,14 +235,6 @@ public abstract class AppDelegate implements IDelegate {
 
     protected void onBindService(Service owner) {
 
-    }
-
-    @Override
-    public Bundle getBundle() {
-        if (mBundle == null) {
-            mBundle = new Bundle();
-        }
-        return mBundle;
     }
 
     /**
@@ -202,40 +265,6 @@ public abstract class AppDelegate implements IDelegate {
         X.registerEvent(mHost);
     }
 
-    @Override
-    public void onDestroy() {
-        X.unRegisterEvent(mHost);
-        if (mUnBinder != null) {
-            mUnBinder.unbind();
-            mUnBinder = null;
-        }
-        if (!EmptyX.isEmpty(mDestroyableList)) {
-            ListX.foreach(mDestroyableList, Destroyable::onDestroy);
-            mDestroyableList.clear();
-        }
-        if (!EmptyX.isEmpty(mDisposables)) {
-            ListX.foreach(mDisposables, Disposable::dispose);
-            mDisposables.clear();
-        }
-        RecycleX.recycle(mDisposables, mDestroyableList, mOnResultViews);
-        RecycleX.recycle(mHandler);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        ListX.foreach(mOnResultViews, view -> view.onRequestPermissionsResult(requestCode, permissions, grantResults));
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        ListX.foreach(mOnResultViews, view -> view.onActivityResult(requestCode, resultCode, data));
-    }
-
-    @NonNull
-    @Override
-    public Lifecycle getLifecycle() {
-        return mLifecycleOwner.getLifecycle();
-    }
 
     private <T extends LifecycleOwner> void attachHost(T host) {
         ComponentX.inject(host);
@@ -250,16 +279,5 @@ public abstract class AppDelegate implements IDelegate {
         }
     }
 
-    @Override
-    public Handler post(Runnable runnable, long delay) {
-        if (mHandler == null) {
-            mHandler = new Handler(Looper.getMainLooper());
-        }
-        if (Looper.getMainLooper() == Looper.myLooper() && delay == 0) {
-            runnable.run();
-        } else {
-            mHandler.postDelayed(runnable, delay);
-        }
-        return mHandler;
-    }
+
 }

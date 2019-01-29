@@ -14,6 +14,7 @@ import com.zfy.component.basic.app.view.IOnResultView;
 import com.zfy.component.basic.app.view.IViewConfig;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.foundation.api.Api;
+import com.zfy.component.basic.foundation.api.IApiAnchor;
 
 /**
  * CreateAt : 2018/10/11
@@ -21,7 +22,7 @@ import com.zfy.component.basic.foundation.api.Api;
  *
  * @author chendong
  */
-public abstract class AppActivity extends AppCompatActivity implements IElegantView, IViewConfig, IBaseView, IInitFlow, IOnResultView {
+public abstract class AppActivity extends AppCompatActivity implements IElegantView, IViewConfig, IBaseView, IInitFlow, IOnResultView, IApiAnchor {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,14 +75,18 @@ public abstract class AppActivity extends AppCompatActivity implements IElegantV
     @Override
     public @NonNull
     Bundle getData() {
-        return this.getViewDelegate().getBundle();
+        return getViewDelegate().getBundle();
+    }
+
+    @Override
+    public int uniqueKey() {
+        return hashCode();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        this.getViewDelegate().onDestroy();
-        Api.cancelSelfRequest(hashCode());
+        getViewDelegate().onDestroy();
     }
 
     @Override
@@ -95,12 +100,12 @@ public abstract class AppActivity extends AppCompatActivity implements IElegantV
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        this.getViewDelegate().onActivityResult(requestCode, resultCode, data);
+        getViewDelegate().onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        this.getViewDelegate().onRequestPermissionsResult(requestCode, permissions, grantResults);
+        getViewDelegate().onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

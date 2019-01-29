@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.march.common.able.Destroyable;
 import com.zfy.component.basic.app.view.IOnResultView;
+import com.zfy.component.basic.foundation.api.IApiAnchor;
 import com.zfy.component.basic.mvx.mvp.app.MvpPluginView;
 
 import io.reactivex.disposables.Disposable;
@@ -22,9 +23,9 @@ import io.reactivex.disposables.Disposable;
  *
  * @author chendong
  */
-public interface IDelegate extends Destroyable, LifecycleOwner, IOnResultView {
+public interface IDelegate extends Destroyable, LifecycleOwner, IOnResultView, IApiAnchor {
 
-    void setOnClickListener(View.OnClickListener listener, int... viewIds);
+    void clickView(View.OnClickListener listener, int... viewIds);
 
     void addObserver(@NonNull LifecycleObserver observer);
 
