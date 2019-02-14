@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.march.common.x.LogX;
+import com.zfy.component.basic.ComponentX;
 import com.zfy.component.basic.app.AppDelegate;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.mvx.mvp.IMvpPresenter;
@@ -88,6 +89,7 @@ public class MvpDelegate<P extends IMvpPresenter> extends AppDelegate {
             if (getPresenter() != null && getPresenter() instanceof MvpPresenter) {
                 MvpPresenter presenter = (MvpPresenter) getPresenter();
                 presenter.attachView((IMvpView) mHost);
+                ComponentX.inject(presenter);
                 presenter.init();
             }
         } else {

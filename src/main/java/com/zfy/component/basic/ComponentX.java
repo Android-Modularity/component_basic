@@ -8,12 +8,21 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.alibaba.android.arouter.facade.Postcard;
+import com.alibaba.android.arouter.facade.template.IProvider;
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.march.common.Common;
 import com.march.common.funcs.Consumer;
 import com.march.common.x.EmptyX;
+import com.zfy.component.basic.foundation.BasicProviderCallbackImpl;
 import com.zfy.component.basic.foundation.JsonAdapterImpl;
+import com.zfy.component.basic.mvx.mvp.IMvpView;
+import com.zfy.component.basic.mvx.mvp.presenter.MvpPresenter;
 import com.zfy.component.basic.service.IComponentService;
+import com.zfy.mantis.api.Mantis;
+import com.zfy.mantis.api.provider.BundleProvider;
+import com.zfy.mantis.api.provider.IDataProvider;
+import com.zfy.mantis.api.provider.IObjProvider;
+import com.zfy.mantis.api.provider.ProviderCallbackImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -88,6 +97,8 @@ public class ComponentX {
         for (IComponentService service : services) {
             service.init(app);
         }
+        // init mantis
+        Mantis.getInst().setProviderCallback(new BasicProviderCallbackImpl());
     }
 
     /**
@@ -95,6 +106,7 @@ public class ComponentX {
      */
     public static void inject(Object object) {
         ARouter.getInstance().inject(object);
+        Mantis.getInst().inject(object);
     }
 
     /**

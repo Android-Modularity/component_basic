@@ -31,7 +31,6 @@ public abstract class MvpPresenter<R extends IRepository, V extends IMvpView> im
 
     }
 
-
     @SuppressWarnings("unchecked")
     private R makeRepo() {
         R repo = null;
@@ -56,5 +55,9 @@ public abstract class MvpPresenter<R extends IRepository, V extends IMvpView> im
     @Override
     public void onDestroy() {
         X.unRegisterEvent(this);
+    }
+
+    public V getView() {
+        return mView;
     }
 }

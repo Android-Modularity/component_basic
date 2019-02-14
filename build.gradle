@@ -2,6 +2,8 @@ apply from: '../scripts/module.gradle'
 
 dependencies {
     // 基础库
+    api deps.mantisApi
+    api deps.mantisAnnotation
     api deps.common
     api deps.multidex
     // 基础 UI

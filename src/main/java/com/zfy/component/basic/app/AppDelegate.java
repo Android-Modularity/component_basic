@@ -267,6 +267,7 @@ public abstract class AppDelegate implements IDelegate {
 
 
     private <T extends LifecycleOwner> void attachHost(T host) {
+        // host
         ComponentX.inject(host);
         mHost = host;
         mLifecycleOwner = host;
