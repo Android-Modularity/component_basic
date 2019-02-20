@@ -19,6 +19,7 @@ import com.zfy.mantis.api.provider.ProviderCallbackImpl;
  * @author chendong
  */
 public class BasicProviderCallbackImpl extends ProviderCallbackImpl {
+
     @Override
     public IDataProvider getDataProvider(Object target) {
         if (target instanceof MvpPresenter) {

@@ -1,4 +1,4 @@
-package com.zfy.component.basic.foundation.api.interceptors;
+package com.zfy.component.basic.foundation.api.interceptor;
 
 import android.support.annotation.NonNull;
 
@@ -18,16 +18,17 @@ public abstract class AbstractInterceptor implements Interceptor {
 
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {
-        return proceedResponse(chain.proceed(proceedRequest(chain.request())));
+        return proceedResponse(chain, chain.proceed(proceedRequest(chain, chain.request())));
     }
 
+
     protected @NonNull
-    Request proceedRequest(Request request) {
+    Request proceedRequest(Chain chain, Request request) throws IOException {
         return request;
     }
 
     protected @NonNull
-    Response proceedResponse(Response response) {
+    Response proceedResponse(Chain chain, Response response) throws IOException {
         return response;
     }
 }

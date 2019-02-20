@@ -1,7 +1,18 @@
 package com.zfy.component.basic.foundation.api.exception;
 
+import android.net.ParseException;
+
 import com.google.gson.JsonParseException;
-import com.march.common.x.ToastX;
+
+import org.apache.http.conn.ConnectTimeoutException;
+import org.json.JSONException;
+
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+
+import javax.net.ssl.SSLHandshakeException;
+
+import retrofit2.HttpException;
 
 
 /**
@@ -12,15 +23,23 @@ import com.march.common.x.ToastX;
  */
 public class ApiException extends IllegalStateException {
 
-    public static final int ERR_NETWORK      = 1; // 网络没有链连接
-    public static final int ERR_DATA_PROCESS = 2; // 数据处理错误
+    public static final int CODE_OK            = 0; // 没有错误
+    public static final int CODE_UNKNOW_ERROR  = 1; // 主动打断请求
+    public static final int CODE_INTERCEPT     = 2; // 主动打断请求
+    public static final int CODE_NETWORK_ERROR = 3; // 网络没有链连接
+    public static final int CODE_HTTP_ERROR    = 4; // http 错误
+    public static final int CODE_PARSE_ERROR   = 5; // 解析错误
+    public static final int CODE_CONNECT_ERROR = 6; // 连接错误
+    public static final int CODE_SSL_ERROR     = 7; // 握手错误
+    public static final int CODE_TIMEOUT_ERROR = 8; // 超时
 
-    public static final int TYPE_INTERCEPT = 1;
+    public int       code;
+    public String    msg;
+    public Throwable error;
 
-    private int    code;
-    private String msg;
-    private int    type;
 
+    public ApiException() {
+    }
 
     public ApiException(String message) {
         super(message);
@@ -34,10 +53,10 @@ public class ApiException extends IllegalStateException {
     public ApiException(int errorCode) {
         code = errorCode;
         switch (code) {
-            case ERR_NETWORK:
+            case CODE_NETWORK_ERROR:
                 msg = "网络未连接";
                 break;
-            case ERR_DATA_PROCESS:
+            case CODE_PARSE_ERROR:
                 msg = "数据处理错误";
                 break;
             default:
@@ -45,39 +64,34 @@ public class ApiException extends IllegalStateException {
         }
     }
 
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public static boolean handleApiException(Throwable e) {
+    public static ApiException parseApiException(Throwable e) {
         if (e instanceof ApiException) {
-            ApiException apiException = (ApiException) e;
-            switch (apiException.code) {
-                case ERR_NETWORK:
-                    // ToastX.show("网络未连接");
-                    return true;
-                default:
-                    break;
-            }
+            return (ApiException) e;
         }
-        if (e instanceof JsonParseException) {
-            ToastX.show(" 数据解析失败");
-            e.printStackTrace();
-            return true;
+        ApiException ex = new ApiException();
+        ex.error = e;
+        if (e instanceof HttpException) {
+            ex.code = CODE_HTTP_ERROR;
+            ex.msg = "Http Error";
+        } else if (e instanceof JsonParseException
+                || e instanceof JSONException
+                || e instanceof ParseException) {
+            ex.code = CODE_PARSE_ERROR;
+            ex.msg = "解析错误";
+        } else if (e instanceof ConnectException) {
+            ex.code = CODE_CONNECT_ERROR;
+            ex.msg = "连接错误";
+        } else if (e instanceof SSLHandshakeException) {
+            ex.code = CODE_SSL_ERROR;
+            ex.msg = "SSL 握手失败，证书错误";
+        } else if (e instanceof ConnectTimeoutException || e instanceof SocketTimeoutException) {
+            ex.code = CODE_TIMEOUT_ERROR;
+            ex.msg = "连接超时";
+        } else {
+            ex.code = CODE_UNKNOW_ERROR;
+            ex.msg = "未知错误";
         }
-
-        return false;
+        return ex;
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
 }

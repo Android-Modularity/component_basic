@@ -33,7 +33,7 @@
     - build.gradle
 - scripts/
     - app.gradle
-    - library.gradle
+    - module.gradle
     - project.gradle
     - utils.gradle
 - products/

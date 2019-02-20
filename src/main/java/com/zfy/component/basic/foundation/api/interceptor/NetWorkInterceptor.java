@@ -1,8 +1,10 @@
-package com.zfy.component.basic.foundation.api.interceptors;
+package com.zfy.component.basic.foundation.api.interceptor;
 
 
 import com.march.common.x.NetX;
 import com.zfy.component.basic.foundation.api.exception.ApiException;
+
+import java.io.IOException;
 
 import okhttp3.Request;
 
@@ -15,10 +17,10 @@ import okhttp3.Request;
 public class NetWorkInterceptor extends AbstractInterceptor {
 
     @Override
-    protected Request proceedRequest(Request request) {
+    protected Request proceedRequest(Chain chain, Request request) throws IOException {
         if (!NetX.isNetworkConnected()) {
-            throw new ApiException(ApiException.ERR_NETWORK);
+            throw new ApiException(ApiException.CODE_NETWORK_ERROR);
         }
-        return super.proceedRequest(request);
+        return super.proceedRequest(chain, request);
     }
 }

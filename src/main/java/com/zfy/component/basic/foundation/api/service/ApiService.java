@@ -11,7 +11,7 @@ import retrofit2.http.Url;
  *
  * @author chendong
  */
-public interface EasyService {
+public interface ApiService {
 
     @GET
     Observable<ResponseBody> download(@Url String url);

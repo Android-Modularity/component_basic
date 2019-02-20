@@ -18,7 +18,7 @@ dependencies {
     api deps.gson
     // 网络
     api deps.okhttp3
-    implementation deps.cookie
+    api deps.okhttp3_logger
     // retrofit
     api deps.retrofit
     api deps.converter_gson
@@ -37,4 +37,9 @@ dependencies {
     // binding adapter
     api deps.bindingAdapter
     api deps.bindingAdapterRv
+
+    add('annotationProcessor', deps.butterknifeProcessor, {})
+    add('annotationProcessor', deps.arouterCompiler, {})
+    add('annotationProcessor', deps.lifecycle_compiler, {})
+    add('annotationProcessor', deps.mantis_compiler, {})
 }

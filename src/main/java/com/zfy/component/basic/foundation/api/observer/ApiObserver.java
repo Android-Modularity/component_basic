@@ -1,4 +1,4 @@
-package com.zfy.component.basic.foundation.api.observers;
+package com.zfy.component.basic.foundation.api.observer;
 
 
 import com.zfy.component.basic.foundation.api.Api;
@@ -24,14 +24,12 @@ public class ApiObserver<D> implements Observer<D> {
 
     public static final String TAG = ApiObserver.class.getSimpleName();
 
-    protected Disposable          disposable;
-    protected Consumer<D>         nextConsumer;
-    protected Consumer<Throwable> errorConsumer;
-    protected Action              finishAction;
+    protected Disposable             disposable;
+    protected Consumer<D>            nextConsumer;
+    protected Consumer<ApiException> errorConsumer;
+    protected Action                 finishAction;
 
     protected ReqConfig requestConfig;
-
-    private int tag;
 
     private boolean isDispose;
 
@@ -39,7 +37,6 @@ public class ApiObserver<D> implements Observer<D> {
 
     public ApiObserver(IApiAnchor host) {
         this.anchor = new WeakReference<>(host);
-        this.tag = host.uniqueKey();
         this.requestConfig = ReqConfig.create();
     }
 
@@ -88,12 +85,14 @@ public class ApiObserver<D> implements Observer<D> {
         if (isDispose) {
             return;
         }
-        if (e instanceof ApiException && ((ApiException) e).getType() == ApiException.TYPE_INTERCEPT) {
+        ApiException ex = ApiException.parseApiException(e);
+        if (ex.code == ApiException.CODE_INTERCEPT) {
+            onFinish();
             return;
         }
         if (errorConsumer != null) {
             try {
-                errorConsumer.accept(e);
+                errorConsumer.accept(ex);
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
@@ -128,7 +127,7 @@ public class ApiObserver<D> implements Observer<D> {
         this.nextConsumer = nextConsumer;
     }
 
-    public void setErrorConsumer(Consumer<Throwable> errorConsumer) {
+    public void setErrorConsumer(Consumer<ApiException> errorConsumer) {
         this.errorConsumer = errorConsumer;
     }
 

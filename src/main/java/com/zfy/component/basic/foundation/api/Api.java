@@ -3,14 +3,25 @@ package com.zfy.component.basic.foundation.api;
 import android.util.LruCache;
 
 import com.google.gson.Gson;
+import com.march.common.Common;
+import com.march.common.x.EmptyX;
 import com.zfy.component.basic.foundation.api.config.ApiOptions;
 import com.zfy.component.basic.foundation.api.converts.StringConvertFactory;
-import com.zfy.component.basic.foundation.api.interceptors.HeaderInterceptor;
-import com.zfy.component.basic.foundation.api.interceptors.NetWorkInterceptor;
+import com.zfy.component.basic.foundation.api.cookie.PersistentCookieJar;
+import com.zfy.component.basic.foundation.api.cookie.cache.SetCookieCache;
+import com.zfy.component.basic.foundation.api.cookie.persistence.SharedPrefsCookiePersistor;
+import com.zfy.component.basic.foundation.api.interceptor.BaseUrlInterceptor;
+import com.zfy.component.basic.foundation.api.interceptor.CacheRequestInterceptor;
+import com.zfy.component.basic.foundation.api.interceptor.CacheResponseInterceptor;
+import com.zfy.component.basic.foundation.api.interceptor.HeaderInterceptor;
+import com.zfy.component.basic.foundation.api.interceptor.MockInterceptor;
+import com.zfy.component.basic.foundation.api.mock.ApiMock;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -37,10 +48,13 @@ public class Api {
     private Retrofit                 mRetrofit; // retrofit
     private ApiOptions               mApiConfig; // config
     private ApiQueueMgr              mApiQueueMgr; // queue
+    private ApiMock                  mApiMock;
+
 
     private Api() {
         mServiceMap = new LruCache<>(10);
         mApiQueueMgr = new ApiQueueMgr();
+        mApiMock = new ApiMock();
     }
 
     public static Api getInst() {
@@ -64,6 +78,10 @@ public class Api {
 
     public static ApiQueueMgr queue() {
         return getInst().mApiQueueMgr;
+    }
+
+    public static ApiMock mock() {
+        return getInst().mApiMock;
     }
 
     @SuppressWarnings("unchecked")
@@ -104,11 +122,31 @@ public class Api {
         // 失败后重试
         builder.retryOnConnectionFailure(true);
         // 检查网络
-        builder.addInterceptor(new NetWorkInterceptor());
-        // 动态 base url
-        // builder.addInterceptor(new BaseUrlInterceptor());
+        // builder.addInterceptor(new NetWorkInterceptor());
         // 用来添加全局 Header
         builder.addInterceptor(new HeaderInterceptor());
+        // 动态 base url
+        if (!EmptyX.isEmpty(config().getBaseUrlMap())) {
+            builder.addInterceptor(new BaseUrlInterceptor());
+        }
+        // mock
+        if (config().isDebug()) {
+            builder.addInterceptor(new MockInterceptor());
+        }
+        // 缓存
+        if (config().isUseCache()) {
+            File httpCacheDirectory = new File(Common.app().getCacheDir(), "okhttp_cache");
+            int cacheSize = 10 * 1024 * 1024; // 10 MB
+            Cache cache = new Cache(httpCacheDirectory, cacheSize);
+            builder.cache(cache);
+            builder.addInterceptor(new CacheRequestInterceptor());
+            builder.addNetworkInterceptor(new CacheResponseInterceptor());
+        }
+        // cookie
+        if (config().isSaveCookie()) {
+            PersistentCookieJar cookieJar = new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(Common.app()));
+            builder.cookieJar(cookieJar);
+        }
         if (config().getOkHttpRewriter() != null) {
             config().getOkHttpRewriter().accept(builder);
         }

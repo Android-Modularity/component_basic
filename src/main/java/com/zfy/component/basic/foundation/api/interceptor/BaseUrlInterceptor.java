@@ -1,7 +1,9 @@
-package com.zfy.component.basic.foundation.api.interceptors;
+package com.zfy.component.basic.foundation.api.interceptor;
 
 import com.march.common.x.EmptyX;
 import com.zfy.component.basic.foundation.api.Api;
+
+import java.io.IOException;
 
 import okhttp3.HttpUrl;
 import okhttp3.Request;
@@ -15,18 +17,18 @@ import okhttp3.Request;
 public class BaseUrlInterceptor extends AbstractInterceptor {
 
     @Override
-    protected Request proceedRequest(Request request) {
+    protected Request proceedRequest(Chain chain, Request request) throws IOException {
         String header = request.header(Api.DOMAIN_KEY);
         if (EmptyX.isEmpty(header)) {
-            return super.proceedRequest(request);
+            return super.proceedRequest(chain, request);
         }
         String baseUrl = Api.config().getBaseUrlMap().get(header);
         if (EmptyX.isEmpty(baseUrl)) {
-            return super.proceedRequest(request);
+            return super.proceedRequest(chain, request);
         }
         HttpUrl mapUrl = HttpUrl.parse(baseUrl);
         if (mapUrl == null) {
-            return super.proceedRequest(request);
+            return super.proceedRequest(chain, request);
         }
         HttpUrl httpUrl = request.url().newBuilder()
                 .scheme(mapUrl.scheme())

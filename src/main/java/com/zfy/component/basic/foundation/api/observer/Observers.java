@@ -1,8 +1,9 @@
-package com.zfy.component.basic.foundation.api.observers;
+package com.zfy.component.basic.foundation.api.observer;
 
 import com.zfy.component.basic.foundation.api.Api;
 import com.zfy.component.basic.foundation.api.IApiAnchor;
 import com.zfy.component.basic.foundation.api.config.ReqConfig;
+import com.zfy.component.basic.foundation.api.exception.ApiException;
 
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
@@ -27,14 +28,14 @@ public class Observers {
     }
 
 
-    public static <D> ApiObserver<D> make(IApiAnchor host, Consumer<D> nextConsumer, Consumer<Throwable> errorConsumer) {
+    public static <D> ApiObserver<D> make(IApiAnchor host, Consumer<D> nextConsumer, Consumer<ApiException> errorConsumer) {
         ApiObserver<D> observer = make(host);
         observer.setNextConsumer(nextConsumer);
         observer.setErrorConsumer(errorConsumer);
         return observer;
     }
 
-    public static <D> ApiObserver<D> make(IApiAnchor host, Consumer<D> nextConsumer, Consumer<Throwable> errorConsumer, Action finishAction) {
+    public static <D> ApiObserver<D> make(IApiAnchor host, Consumer<D> nextConsumer, Consumer<ApiException> errorConsumer, Action finishAction) {
         ApiObserver<D> observer = make(host);
         observer.setNextConsumer(nextConsumer);
         observer.setErrorConsumer(errorConsumer);
@@ -49,7 +50,7 @@ public class Observers {
         return observer;
     }
 
-    public static <D> ApiObserver<D> make(IApiAnchor host, ReqConfig reqConfig, Consumer<D> nextConsumer, Consumer<Throwable> errorConsumer) {
+    public static <D> ApiObserver<D> make(IApiAnchor host, ReqConfig reqConfig, Consumer<D> nextConsumer, Consumer<ApiException> errorConsumer) {
         ApiObserver<D> observer = make(host);
         observer.setNextConsumer(nextConsumer);
         observer.setErrorConsumer(errorConsumer);
@@ -57,7 +58,7 @@ public class Observers {
         return observer;
     }
 
-    public static <D> ApiObserver<D> make(IApiAnchor host, ReqConfig reqConfig, Consumer<D> nextConsumer, Consumer<Throwable> errorConsumer, Action finishAction) {
+    public static <D> ApiObserver<D> make(IApiAnchor host, ReqConfig reqConfig, Consumer<D> nextConsumer, Consumer<ApiException> errorConsumer, Action finishAction) {
         ApiObserver<D> observer = make(host);
         observer.setNextConsumer(nextConsumer);
         observer.setErrorConsumer(errorConsumer);
