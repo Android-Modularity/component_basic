@@ -26,6 +26,7 @@ import butterknife.ButterKnife;
  *
  * @author chendong
  */
+@Deprecated
 public abstract class AppDialog2 extends AppCompatDialog {
 
     protected int MATCH = ViewGroup.LayoutParams.MATCH_PARENT;

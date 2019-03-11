@@ -2,27 +2,16 @@ package com.zfy.component.basic;
 
 import android.app.Application;
 import android.content.Context;
-import android.net.Uri;
-import android.support.annotation.CheckResult;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.alibaba.android.arouter.facade.Postcard;
-import com.alibaba.android.arouter.facade.template.IProvider;
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.march.common.Common;
-import com.march.common.funcs.Consumer;
 import com.march.common.x.EmptyX;
 import com.zfy.component.basic.foundation.BasicProviderCallbackImpl;
 import com.zfy.component.basic.foundation.JsonAdapterImpl;
-import com.zfy.component.basic.mvx.mvp.IMvpView;
-import com.zfy.component.basic.mvx.mvp.presenter.MvpPresenter;
+import com.zfy.component.basic.route.Router;
 import com.zfy.component.basic.service.IComponentService;
 import com.zfy.mantis.api.Mantis;
-import com.zfy.mantis.api.provider.BundleProvider;
-import com.zfy.mantis.api.provider.IDataProvider;
-import com.zfy.mantis.api.provider.IObjProvider;
-import com.zfy.mantis.api.provider.ProviderCallbackImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +24,6 @@ import java.util.List;
  * @author chendong
  */
 public class ComponentX {
-
 
     private static boolean  DEBUG         = false;
     private static String[] SERVICE_NAMES = new String[]{};
@@ -69,7 +57,7 @@ public class ComponentX {
     private static List<IComponentService> getComponentServices() {
         List<IComponentService> list = new ArrayList<>();
         for (String serviceName : SERVICE_NAMES) {
-            Object service = service(serviceName);
+            Object service = Router.service(serviceName);
             if (service instanceof IComponentService) {
                 list.add((IComponentService) service);
             }
@@ -103,80 +91,11 @@ public class ComponentX {
 
     /**
      * 依赖注入
+     * @param object 需要注入的对象
      */
     public static void inject(Object object) {
         ARouter.getInstance().inject(object);
         Mantis.getInst().inject(object);
     }
 
-    /**
-     * 发现服务1
-     */
-    @Nullable
-    public static <T> T service(Class<T> clazz) {
-        return ARouter.getInstance().navigation(clazz);
-    }
-
-    /**
-     * 发现服务
-     */
-    @Nullable
-    public static <T> T service(String path) {
-        Object service = ARouter.getInstance().build(path).navigation();
-        if (service == null) {
-            return null;
-        }
-        return (T) service;
-    }
-
-    /**
-     * 发现服务1
-     */
-    @Nullable
-    public static <T> void service(Class<T> clazz, Consumer<T> consumer) {
-        T service = ARouter.getInstance().navigation(clazz);
-        if (service != null) {
-            consumer.accept(service);
-        }
-    }
-
-    /**
-     * 发现服务
-     */
-    @Nullable
-    public static <T> void service(String path, Class<T> clazz, Consumer<T> consumer) {
-        Object service = ARouter.getInstance().build(path).navigation();
-        if (service != null) {
-            consumer.accept((T) service);
-        }
-    }
-
-
-    /**
-     * 路由1
-     */
-    @CheckResult
-    public static Postcard route(String url) {
-        return ARouter.getInstance().build(url);
-    }
-
-    /**
-     * 路由2
-     */
-    @CheckResult
-    public static Postcard route(Uri uri) {
-        return ARouter.getInstance().build(uri);
-    }
-
-    /**
-     * 路由3
-     */
-    public static void go(Context context, String url) {
-        ARouter.getInstance().build(url).navigation(context);
-    }
-
-
-    public static boolean extraSign(int extra, int index) {
-        return ((extra >> index) & 1) == 1;
-    }
 }

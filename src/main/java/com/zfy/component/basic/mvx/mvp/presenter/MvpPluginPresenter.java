@@ -1,6 +1,6 @@
 package com.zfy.component.basic.mvx.mvp.presenter;
 
-import com.zfy.component.basic.app.view.IViewConfig;
+import com.zfy.component.basic.app.view.IView;
 import com.zfy.component.basic.mvx.model.IRepository;
 import com.zfy.component.basic.mvx.mvp.IMvpView;
 
@@ -15,8 +15,8 @@ public abstract class MvpPluginPresenter<R extends IRepository, V extends IMvpVi
 
     public void pluginAttachView(V view) {
         try {
-            if (view instanceof IViewConfig) {
-                ((IViewConfig) view).getViewDelegate().addObserver(this);
+            if (view instanceof IView) {
+                ((IView) view).getViewDelegate().addObserver(this);
             }
             attachView(view);
             init();

@@ -52,20 +52,10 @@ public class MvpPluginView<HOST extends IMvpView, P extends IMvpPresenter>
         return mHostView.getActivity();
     }
 
-    @Override
-    public void startPage(Intent data, int code) {
-        mHostView.startPage(data, code);
-    }
-
     @NonNull
     @Override
     public Bundle getData() {
         return mDelegate.getBundle();
-    }
-
-    @Override
-    public void finishPage(Intent intent, int code) {
-        mHostView.finishPage(intent, code);
     }
 
     @Override

@@ -8,7 +8,7 @@ import com.zfy.component.basic.app.IDelegate;
  *
  * @author chendong
  */
-public interface IViewConfig {
+public interface IView {
 
     ViewConfig getViewConfig();
 

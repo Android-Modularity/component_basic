@@ -1,14 +1,14 @@
 package com.zfy.component.basic.foundation;
 
+import android.app.Activity;
 import android.app.Dialog;
-import android.content.Intent;
-import android.support.v4.app.FragmentActivity;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.zfy.component.basic.R;
-import com.zfy.component.basic.app.AppActivity;
+import com.zfy.component.basic.app.IDelegate;
 import com.zfy.component.basic.app.data.DialogAttr;
+import com.zfy.component.basic.app.view.IView;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -81,17 +81,16 @@ public class X {
         }
     }
 
-
-    public static void finishPage(FragmentActivity activity, Intent intent, int code) {
+    public static void finish(Activity activity) {
         if (activity != null) {
-            if (activity instanceof AppActivity) {
-                ((AppActivity) activity).finishPage(intent, code);
-            } else {
-                if (intent != null) {
-                    activity.setResult(code, intent);
-                }
-                activity.finish();
-            }
+            activity.finish();
+        }
+    }
+
+    public static void post(IView view, Runnable runnable, long delay) {
+        IDelegate viewDelegate = view.getViewDelegate();
+        if (viewDelegate != null) {
+            viewDelegate.post(runnable, delay);
         }
     }
 }

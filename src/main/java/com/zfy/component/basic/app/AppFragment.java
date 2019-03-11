@@ -12,9 +12,8 @@ import android.view.ViewGroup;
 import com.zfy.component.basic.app.view.IBaseView;
 import com.zfy.component.basic.app.view.IElegantView;
 import com.zfy.component.basic.app.view.IInitFlow;
-import com.zfy.component.basic.app.view.IViewConfig;
+import com.zfy.component.basic.app.view.IView;
 import com.zfy.component.basic.app.view.ViewConfig;
-import com.zfy.component.basic.foundation.X;
 import com.zfy.component.basic.foundation.api.IApiAnchor;
 
 /**
@@ -24,7 +23,7 @@ import com.zfy.component.basic.foundation.api.IApiAnchor;
  * @author chendong
  */
 public abstract class AppFragment extends Fragment
-        implements IElegantView, IViewConfig, IBaseView, IInitFlow,IApiAnchor {
+        implements IElegantView, IView, IBaseView, IInitFlow,IApiAnchor {
 
     protected View       mContentView;
     protected LazyLoader mLazyLoader;
@@ -87,15 +86,6 @@ public abstract class AppFragment extends Fragment
     // elegant view
 
     @Override
-    public void startPage(Intent data, int requestCode) {
-        if (requestCode == 0) {
-            startActivity(data);
-        } else {
-            startActivityForResult(data, requestCode);
-        }
-    }
-
-    @Override
     public @NonNull
     Bundle getData() {
         return getViewDelegate().getBundle();
@@ -113,13 +103,6 @@ public abstract class AppFragment extends Fragment
             getViewDelegate().onDestroy();
         }
     }
-
-
-    @Override
-    public void finishPage(Intent intent, int code) {
-        X.finishPage(getActivity(), intent, code);
-    }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

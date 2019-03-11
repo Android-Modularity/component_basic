@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.alibaba.android.arouter.facade.template.IProvider;
 import com.march.common.x.EmptyX;
-import com.zfy.component.basic.ComponentX;
+import com.zfy.component.basic.route.Router;
 import com.zfy.component.basic.mvx.mvp.IMvpView;
 import com.zfy.component.basic.mvx.mvp.presenter.MvpPresenter;
 import com.zfy.mantis.api.provider.BundleProvider;
@@ -42,11 +42,11 @@ public class BasicProviderCallbackImpl extends ProviderCallbackImpl {
 
     // 帮助发现服务
     private IProvider provideARouterService(Object target, String key, Class<?> clazz) {
-        IProvider provider = null;
+        IProvider provider;
         if (EmptyX.isEmpty(key)) {
-            provider = (IProvider) ComponentX.service(clazz);
+            provider = (IProvider) Router.service(clazz);
         } else {
-            provider = ComponentX.service(key);
+            provider = Router.service(key);
         }
         if (provider != null) {
             if (target instanceof Context) {

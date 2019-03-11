@@ -11,9 +11,8 @@ import com.zfy.component.basic.app.view.IBaseView;
 import com.zfy.component.basic.app.view.IElegantView;
 import com.zfy.component.basic.app.view.IInitFlow;
 import com.zfy.component.basic.app.view.IOnResultView;
-import com.zfy.component.basic.app.view.IViewConfig;
+import com.zfy.component.basic.app.view.IView;
 import com.zfy.component.basic.app.view.ViewConfig;
-import com.zfy.component.basic.foundation.api.Api;
 import com.zfy.component.basic.foundation.api.IApiAnchor;
 
 /**
@@ -22,7 +21,7 @@ import com.zfy.component.basic.foundation.api.IApiAnchor;
  *
  * @author chendong
  */
-public abstract class AppActivity extends AppCompatActivity implements IElegantView, IViewConfig, IBaseView, IInitFlow, IOnResultView, IApiAnchor {
+public abstract class AppActivity extends AppCompatActivity implements IElegantView, IView, IBaseView, IInitFlow, IOnResultView, IApiAnchor {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,14 +62,6 @@ public abstract class AppActivity extends AppCompatActivity implements IElegantV
         return this;
     }
 
-    @Override
-    public void startPage(Intent data, int requestCode) {
-        if (requestCode == 0) {
-            startActivity(data);
-        } else {
-            startActivityForResult(data, requestCode);
-        }
-    }
 
     @Override
     public @NonNull
@@ -89,13 +80,6 @@ public abstract class AppActivity extends AppCompatActivity implements IElegantV
         getViewDelegate().onDestroy();
     }
 
-    @Override
-    public void finishPage(Intent intent, int code) {
-        if (intent != null) {
-            setResult(code, intent);
-        }
-        finish();
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

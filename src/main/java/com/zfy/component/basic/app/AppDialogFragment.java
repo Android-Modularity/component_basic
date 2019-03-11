@@ -1,10 +1,12 @@
 package com.zfy.component.basic.app;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +16,7 @@ import com.zfy.component.basic.app.data.DialogAttr;
 import com.zfy.component.basic.app.view.IBaseView;
 import com.zfy.component.basic.app.view.IElegantView;
 import com.zfy.component.basic.app.view.IInitFlow;
-import com.zfy.component.basic.app.view.IViewConfig;
+import com.zfy.component.basic.app.view.IView;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.foundation.X;
 import com.zfy.component.basic.foundation.api.IApiAnchor;
@@ -26,9 +28,10 @@ import com.zfy.component.basic.foundation.api.IApiAnchor;
  * @author chendong
  */
 public abstract class AppDialogFragment extends DialogFragment
-        implements IElegantView, IViewConfig, IBaseView, IInitFlow, IApiAnchor {
+        implements IElegantView, IView, IBaseView, IInitFlow, IApiAnchor {
 
     protected View mContentView;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,11 +39,6 @@ public abstract class AppDialogFragment extends DialogFragment
         setStyle(DialogFragment.STYLE_NO_FRAME, R.style.dialog_theme);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        X.setDialogAttributes(getDialog(), getAttr());
-    }
 
     @Nullable
     @Override
@@ -81,15 +79,6 @@ public abstract class AppDialogFragment extends DialogFragment
     // elegant view
 
     @Override
-    public void startPage(Intent data, int requestCode) {
-        if (requestCode == 0) {
-            startActivity(data);
-        } else {
-            startActivityForResult(data, requestCode);
-        }
-    }
-
-    @Override
     public int uniqueKey() {
         return hashCode();
     }
@@ -109,12 +98,6 @@ public abstract class AppDialogFragment extends DialogFragment
     }
 
     @Override
-    public void finishPage(Intent intent, int code) {
-        X.finishPage(getActivity(), intent, code);
-    }
-
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         getViewDelegate().onActivityResult(requestCode, resultCode, data);
@@ -125,4 +108,42 @@ public abstract class AppDialogFragment extends DialogFragment
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         getViewDelegate().onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
+
+    private boolean mAlreadyAddToFt; // 是否已添加到 FragmentTransaction
+    private boolean mShowAsDialog; // 是否以 Dialog 显示，不会每次销毁
+
+    public void showAsDialog(FragmentManager fragmentManager) {
+        mShowAsDialog = true;
+        if (mAlreadyAddToFt) {
+            if (!getDialog().isShowing()) {
+                getDialog().show();
+            }
+        } else {
+            show(fragmentManager, "dialog" + hashCode());
+            mAlreadyAddToFt = true;
+        }
+    }
+
+    private boolean mNotFirstStart;
+
+    @Override
+    public void onStart() {
+        boolean showing = this.getDialog().isShowing();
+        super.onStart();
+        X.setDialogAttributes(getDialog(), getAttr());
+        if (mNotFirstStart && !showing) {
+            getDialog().dismiss();
+        }
+        mNotFirstStart = true;
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        if (mShowAsDialog) {
+            dialog.dismiss();
+        } else {
+            super.onDismiss(dialog);
+        }
+    }
+
 }

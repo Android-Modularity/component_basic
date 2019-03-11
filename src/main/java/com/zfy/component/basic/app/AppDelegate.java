@@ -22,7 +22,7 @@ import com.march.common.x.RecycleX;
 import com.zfy.component.basic.ComponentX;
 import com.zfy.component.basic.app.view.IBaseView;
 import com.zfy.component.basic.app.view.IOnResultView;
-import com.zfy.component.basic.app.view.IViewConfig;
+import com.zfy.component.basic.app.view.IView;
 import com.zfy.component.basic.app.view.ViewConfig;
 import com.zfy.component.basic.foundation.X;
 import com.zfy.component.basic.foundation.api.Api;
@@ -135,10 +135,8 @@ public abstract class AppDelegate implements IDelegate {
         }
         // NoLayoutView 绑定到 Host 生命周期等
         IDelegate hostDelegate = null;
-        if (host instanceof AppActivity) {
-            hostDelegate = ((AppActivity) host).getViewDelegate();
-        } else if (host instanceof AppFragment) {
-            hostDelegate = ((AppFragment) host).getViewDelegate();
+        if (host instanceof IView) {
+            hostDelegate = ((IView) host).getViewDelegate();
         }
         if (hostDelegate != null) {
             hostDelegate.addDestroyable(mvpPluginView);
@@ -271,8 +269,8 @@ public abstract class AppDelegate implements IDelegate {
         ComponentX.inject(host);
         mHost = host;
         mLifecycleOwner = host;
-        if (host instanceof IViewConfig && ((IViewConfig) host).getViewConfig() != null) {
-            mViewConfig = ((IViewConfig) host).getViewConfig();
+        if (host instanceof IView && ((IView) host).getViewConfig() != null) {
+            mViewConfig = ((IView) host).getViewConfig();
         }
         onAttachHost(host);
         if (mViewConfig == null) {
