@@ -1,6 +1,7 @@
 package com.zfy.component.basic.foundation.api.observer;
 
 
+import com.march.common.able.Releasable;
 import com.zfy.component.basic.foundation.api.Api;
 import com.zfy.component.basic.foundation.api.IApiAnchor;
 import com.zfy.component.basic.foundation.api.config.ReqConfig;
@@ -20,7 +21,7 @@ import io.reactivex.functions.Consumer;
  *
  * @author chendong
  */
-public class ApiObserver<D> implements Observer<D> {
+public class ApiObserver<D> implements Observer<D>, Releasable {
 
     public static final String TAG = ApiObserver.class.getSimpleName();
 
@@ -39,7 +40,6 @@ public class ApiObserver<D> implements Observer<D> {
         this.anchor = new WeakReference<>(host);
         this.requestConfig = ReqConfig.create();
     }
-
 
     @Override
     public void onSubscribe(Disposable d) {
@@ -61,18 +61,22 @@ public class ApiObserver<D> implements Observer<D> {
     @Override
     public void onNext(@NonNull D t) {
         if (isDispose) {
+            release();
             return;
         }
         if (interceptNext(t)) {
+            release();
             return;
         }
         if (nextConsumer != null) {
             try {
                 nextConsumer.accept(t);
             } catch (Exception e) {
+                e.printStackTrace();
                 onError(e);
             }
         }
+        release();
     }
 
     // 截断返回
@@ -83,6 +87,7 @@ public class ApiObserver<D> implements Observer<D> {
     @Override
     public void onError(@NonNull Throwable e) {
         if (isDispose) {
+            release();
             return;
         }
         ApiException ex = ApiException.parseApiException(e);
@@ -103,6 +108,7 @@ public class ApiObserver<D> implements Observer<D> {
     @Override
     public void onComplete() {
         if (isDispose) {
+            release();
             return;
         }
         onFinish();
@@ -111,16 +117,14 @@ public class ApiObserver<D> implements Observer<D> {
     // onError or onComplete
     protected void onFinish() {
         Api.queue().removeRequest(anchor.get(), disposable);
-        if (isDispose) {
-            return;
-        }
-        if (finishAction != null) {
+        if (!isDispose && finishAction != null) {
             try {
                 finishAction.run();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        release();
     }
 
     public void setNextConsumer(Consumer<D> nextConsumer) {
@@ -137,5 +141,15 @@ public class ApiObserver<D> implements Observer<D> {
 
     public void setRequestConfig(ReqConfig requestConfig) {
         this.requestConfig = requestConfig;
+    }
+
+    @Override
+    public void release() {
+        if (anchor != null) {
+            anchor.clear();
+        }
+        nextConsumer = null;
+        errorConsumer = null;
+        finishAction = null;
     }
 }

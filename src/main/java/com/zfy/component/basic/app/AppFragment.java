@@ -13,7 +13,7 @@ import com.zfy.component.basic.app.view.IBaseView;
 import com.zfy.component.basic.app.view.IElegantView;
 import com.zfy.component.basic.app.view.IInitFlow;
 import com.zfy.component.basic.app.view.IView;
-import com.zfy.component.basic.app.view.ViewConfig;
+import com.zfy.component.basic.app.view.ViewOpts;
 import com.zfy.component.basic.foundation.api.IApiAnchor;
 
 /**
@@ -28,7 +28,7 @@ public abstract class AppFragment extends Fragment
     protected View       mContentView;
     protected LazyLoader mLazyLoader;
 
-    private LazyLoader getLazyLoader() {
+    protected LazyLoader getLazyLoader() {
         if (mLazyLoader == null) {
             mLazyLoader = new LazyLoader(this);
         }
@@ -52,8 +52,9 @@ public abstract class AppFragment extends Fragment
         preInit();
         init();
         getViewDelegate().onHostInit();
-        if (canLazyLoad()) {
-            getLazyLoader().onCreateView(inflater, container, savedInstanceState);
+        LazyLoader lazyLoader = getLazyLoader();
+        if (enableLazyLoad() && lazyLoader.mCanLazyLoadNow) {
+            lazyLoader.onCreateView(inflater, container, savedInstanceState);
         }
         return mContentView;
     }
@@ -70,7 +71,7 @@ public abstract class AppFragment extends Fragment
     }
 
     @Override
-    public ViewConfig getViewConfig() {
+    public ViewOpts getViewOpts() {
         return null;
     }
 
@@ -78,8 +79,8 @@ public abstract class AppFragment extends Fragment
     public void lazyLoad() {
     }
 
-
-    public boolean canLazyLoad() {
+    // 是否开启懒加载
+    public boolean enableLazyLoad() {
         return false;
     }
 
@@ -125,6 +126,7 @@ public abstract class AppFragment extends Fragment
     public static class LazyLoader {
 
         private boolean     mIsPrepared;
+        private boolean     mCanLazyLoadNow = true;
         private AppFragment mFragment;
 
         public LazyLoader(AppFragment fragment) {
@@ -144,9 +146,13 @@ public abstract class AppFragment extends Fragment
         }
 
         private void lazyLoadInternal() {
-            if (mFragment.getUserVisibleHint() && mIsPrepared && mFragment.canLazyLoad()) {
+            if (mFragment.getUserVisibleHint() && mIsPrepared && mFragment.enableLazyLoad() && mCanLazyLoadNow) {
                 mFragment.lazyLoad();
             }
+        }
+
+        public void setCanLazyLoadNow(boolean canLazyLoadNow) {
+            mCanLazyLoadNow = canLazyLoadNow;
         }
     }
 }

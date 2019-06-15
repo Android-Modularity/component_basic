@@ -2,9 +2,11 @@ package com.zfy.component.basic.foundation;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.march.common.x.ActivityAnimX;
 import com.zfy.component.basic.R;
 import com.zfy.component.basic.app.IDelegate;
 import com.zfy.component.basic.app.data.DialogAttr;
@@ -20,6 +22,11 @@ import org.greenrobot.eventbus.EventBus;
  */
 public class X {
 
+    /**
+     * 注册 EventBus
+     *
+     * @param host 注册者
+     */
     public static void registerEvent(Object host) {
         if (host == null) {
             return;
@@ -33,6 +40,11 @@ public class X {
         }
     }
 
+    /**
+     * 取消注册 EventBus
+     *
+     * @param host 注册着
+     */
     public static void unRegisterEvent(Object host) {
         if (host == null) {
             return;
@@ -46,6 +58,13 @@ public class X {
         }
     }
 
+    /**
+     * 创建实例
+     *
+     * @param clazz class
+     * @param <T>   范型
+     * @return 实例
+     */
     public static <T> T newInst(Class<T> clazz) {
         T t;
         try {
@@ -58,6 +77,11 @@ public class X {
     }
 
 
+    /**
+     * 设置 Dialog Attrs
+     * @param dialog dialog
+     * @param attr attr
+     */
     public static void setDialogAttributes(Dialog dialog, DialogAttr attr) {
         dialog.setCancelable(attr.cancelable);
         dialog.setCanceledOnTouchOutside(attr.canceledOnTouchOutside);
@@ -84,6 +108,14 @@ public class X {
     public static void finish(Activity activity) {
         if (activity != null) {
             activity.finish();
+            ActivityAnimX.translateFinish(activity);
+        }
+    }
+
+    public static void start(Activity activity, Intent intent) {
+        if (activity != null) {
+            activity.startActivity(intent);
+            ActivityAnimX.translateStart(activity);
         }
     }
 
@@ -93,4 +125,5 @@ public class X {
             viewDelegate.post(runnable, delay);
         }
     }
+
 }

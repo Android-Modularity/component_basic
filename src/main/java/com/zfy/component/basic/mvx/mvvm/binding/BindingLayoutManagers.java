@@ -1,4 +1,4 @@
-package com.zfy.component.basic.mvx.mvvm.binding.common;
+package com.zfy.component.basic.mvx.mvvm.binding;
 
 import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;

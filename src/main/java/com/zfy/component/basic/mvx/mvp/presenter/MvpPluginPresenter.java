@@ -13,7 +13,7 @@ import com.zfy.component.basic.mvx.mvp.IMvpView;
 public abstract class MvpPluginPresenter<R extends IRepository, V extends IMvpView>
         extends MvpPresenter<R, V> {
 
-    public void pluginAttachView(V view) {
+    public void attachViewOnPlugin(V view) {
         try {
             if (view instanceof IView) {
                 ((IView) view).getViewDelegate().addObserver(this);

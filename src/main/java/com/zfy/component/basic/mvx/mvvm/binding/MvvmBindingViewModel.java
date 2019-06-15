@@ -1,14 +1,12 @@
-package com.zfy.component.basic.mvx.mvvm;
+package com.zfy.component.basic.mvx.mvvm.binding;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LifecycleObserver;
-import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * CreateAt : 2018/9/11
@@ -16,9 +14,10 @@ import org.greenrobot.eventbus.ThreadMode;
  *
  * @author chendong
  */
-public abstract class BaseViewModel extends AndroidViewModel implements LifecycleObserver {
+public abstract class MvvmBindingViewModel extends AndroidViewModel implements LifecycleObserver {
 
-    public BaseViewModel(@NonNull Application application) {
+
+    public MvvmBindingViewModel(@NonNull Application application) {
         super(application);
         EventBus.getDefault().register(this);
     }
@@ -31,19 +30,11 @@ public abstract class BaseViewModel extends AndroidViewModel implements Lifecycl
 
     }
 
-    public Context getCtx() {
-        return getApplication();
-    }
-
     @Override
     protected void onCleared() {
         super.onCleared();
         EventBus.getDefault().unregister(this);
     }
 
-    // for event bus compiler
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void ignore(BaseViewModel ignore) {
-    }
 
 }

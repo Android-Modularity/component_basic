@@ -10,7 +10,7 @@ import com.zfy.component.basic.app.IDelegate;
  */
 public interface IView {
 
-    ViewConfig getViewConfig();
+    ViewOpts getViewOpts();
 
     IDelegate getViewDelegate();
 }

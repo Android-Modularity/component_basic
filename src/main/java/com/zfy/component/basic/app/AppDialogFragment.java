@@ -11,13 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.march.common.able.Destroyable;
 import com.zfy.component.basic.R;
 import com.zfy.component.basic.app.data.DialogAttr;
 import com.zfy.component.basic.app.view.IBaseView;
 import com.zfy.component.basic.app.view.IElegantView;
 import com.zfy.component.basic.app.view.IInitFlow;
 import com.zfy.component.basic.app.view.IView;
-import com.zfy.component.basic.app.view.ViewConfig;
+import com.zfy.component.basic.app.view.ViewOpts;
 import com.zfy.component.basic.foundation.X;
 import com.zfy.component.basic.foundation.api.IApiAnchor;
 
@@ -28,7 +29,7 @@ import com.zfy.component.basic.foundation.api.IApiAnchor;
  * @author chendong
  */
 public abstract class AppDialogFragment extends DialogFragment
-        implements IElegantView, IView, IBaseView, IInitFlow, IApiAnchor {
+        implements IElegantView, IView, IBaseView, IInitFlow, IApiAnchor, Destroyable {
 
     protected View mContentView;
 
@@ -72,7 +73,7 @@ public abstract class AppDialogFragment extends DialogFragment
     }
 
     @Override
-    public ViewConfig getViewConfig() {
+    public ViewOpts getViewOpts() {
         return null;
     }
 
@@ -146,4 +147,7 @@ public abstract class AppDialogFragment extends DialogFragment
         }
     }
 
+    public void setShowView(IView view) {
+        view.getViewDelegate().addDestroyable(this);
+    }
 }

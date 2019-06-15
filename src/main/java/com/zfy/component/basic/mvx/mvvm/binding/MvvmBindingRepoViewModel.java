@@ -1,4 +1,4 @@
-package com.zfy.component.basic.mvx.mvvm;
+package com.zfy.component.basic.mvx.mvvm.binding;
 
 import android.app.Application;
 import android.support.annotation.NonNull;
@@ -11,11 +11,11 @@ import com.zfy.component.basic.mvx.model.IRepository;
  *
  * @author chendong
  */
-public abstract class RepositoryViewModel<R extends IRepository> extends BaseViewModel {
+public abstract class MvvmBindingRepoViewModel<R extends IRepository> extends MvvmBindingViewModel {
 
     protected R mRepository;
 
-    public RepositoryViewModel(@NonNull Application application) {
+    public MvvmBindingRepoViewModel(@NonNull Application application) {
         super(application);
         mRepository = getRepository();
     }

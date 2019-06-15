@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import com.march.common.able.Destroyable;
 import com.zfy.component.basic.app.view.IOnResultView;
 import com.zfy.component.basic.foundation.api.IApiAnchor;
-import com.zfy.component.basic.mvx.mvp.app.MvpPluginView;
+import com.zfy.component.basic.mvx.mvp.app.MvpFunctionView;
 
 import io.reactivex.disposables.Disposable;
 
@@ -43,12 +43,14 @@ public interface IDelegate extends Destroyable, LifecycleOwner, IOnResultView, I
 
     void bindActivity(AppActivity appActivity);
 
-    void bindPluginView(MvpPluginView noLayoutMvpView, Object host);
+    void bindFunctionView(AppFunctionView functionView, Object host);
 
     void onAttachHost(Object host);
 
     @NonNull
     Bundle getBundle();
+
+    Handler getHandler();
 
     Handler post(Runnable runnable, long delay);
 }

@@ -1,7 +1,9 @@
-package com.zfy.component.basic.mvx.mvp.app;
+package com.zfy.component.basic.app;
 
 import android.app.Activity;
 import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.LifecycleRegistry;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,11 +12,11 @@ import android.view.View;
 
 import com.march.common.able.Destroyable;
 import com.zfy.component.basic.app.view.IBaseView;
+import com.zfy.component.basic.app.view.IElegantView;
 import com.zfy.component.basic.app.view.IOnResultView;
+import com.zfy.component.basic.app.view.IView;
+import com.zfy.component.basic.app.view.ViewOpts;
 import com.zfy.component.basic.foundation.api.IApiAnchor;
-import com.zfy.component.basic.mvx.mvp.IExtendsMvpView;
-import com.zfy.component.basic.mvx.mvp.IMvpPresenter;
-import com.zfy.component.basic.mvx.mvp.IMvpView;
 
 /**
  * CreateAt : 2018/10/9
@@ -24,48 +26,53 @@ import com.zfy.component.basic.mvx.mvp.IMvpView;
  *
  * @author chendong
  */
-public class MvpPluginView<HOST extends IMvpView, P extends IMvpPresenter>
-        implements IExtendsMvpView<P>, Destroyable, IOnResultView, IBaseView, IApiAnchor {
-
-    protected MvpDelegate<P> mDelegate = new MvpDelegate<>();
+public abstract class AppFunctionView<HOST> implements LifecycleOwner, IElegantView, Destroyable, IOnResultView, IBaseView, IApiAnchor, IView {
 
     protected HOST mHostView;
 
-    public MvpPluginView(HOST view) {
+    public AppFunctionView(HOST view) {
         mHostView = view;
-        mDelegate.bindPluginView(this, mHostView);
+        getViewDelegate().bindFunctionView(this, view);
+        init();
     }
+
+    public abstract void init();
 
     @NonNull
     @Override
     public Lifecycle getLifecycle() {
-        return mHostView.getLifecycle();
+        if (mHostView instanceof LifecycleOwner) {
+            return ((LifecycleOwner) mHostView).getLifecycle();
+        }
+        return new LifecycleRegistry(this);
     }
 
     @Override
     public Context getContext() {
-        return mHostView.getContext();
+        if (mHostView instanceof IElegantView) {
+            return ((IElegantView) mHostView).getContext();
+        }
+        throw new IllegalStateException("HOST should impl IElegantView to getContext()");
     }
 
     @Override
     public Activity getActivity() {
-        return mHostView.getActivity();
+        if (mHostView instanceof IElegantView) {
+            return ((IElegantView) mHostView).getActivity();
+        }
+        throw new IllegalStateException("HOST should impl IElegantView to getActivity()");
     }
 
     @NonNull
     @Override
     public Bundle getData() {
-        return mDelegate.getBundle();
-    }
-
-    @Override
-    public P getPresenter() {
-        return mDelegate.getPresenter();
+        return getViewDelegate().getBundle();
     }
 
     @Override
     public void onDestroy() {
-        mDelegate.onDestroy();
+        mHostView = null;
+        getViewDelegate().onDestroy();
     }
 
     @Override
@@ -83,7 +90,7 @@ public class MvpPluginView<HOST extends IMvpView, P extends IMvpPresenter>
         if (mHostView instanceof IBaseView) {
             return ((IBaseView) mHostView).findViewById(id);
         }
-        return null;
+        throw new IllegalStateException("HOST should impl IBaseView to findViewById()");
     }
 
     @Override
@@ -92,5 +99,14 @@ public class MvpPluginView<HOST extends IMvpView, P extends IMvpPresenter>
             return ((IApiAnchor) mHostView).uniqueKey();
         }
         return hashCode();
+    }
+
+    @Override
+    public ViewOpts getViewOpts() {
+        return null;
+    }
+
+    public HOST getHostView() {
+        return mHostView;
     }
 }

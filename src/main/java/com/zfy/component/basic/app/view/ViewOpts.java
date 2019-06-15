@@ -6,33 +6,40 @@ package com.zfy.component.basic.app.view;
  *
  * @author chendong
  */
-public class ViewConfig {
+public class ViewOpts {
 
     private int   layout;
     private int   vmId;
     private Class vmClazz;
     private Class pClazz;
 
-    private ViewConfig() {
+    private ViewOpts() {
     }
 
-    public static ViewConfig makeMvvm(int layout, int vmId, Class vmClazz) {
-        ViewConfig viewConfig = new ViewConfig();
+    public static ViewOpts makeMvvm(int layout, int vmId, Class vmClazz) {
+        ViewOpts viewConfig = new ViewOpts();
         viewConfig.layout = layout;
         viewConfig.vmId = vmId;
         viewConfig.vmClazz = vmClazz;
         return viewConfig;
     }
 
-    public static ViewConfig makeMvp(int layout, Class pClazz) {
-        ViewConfig viewConfig = new ViewConfig();
+    public static ViewOpts makeMvvm(int layout, Class vmClazz) {
+        ViewOpts viewConfig = new ViewOpts();
+        viewConfig.layout = layout;
+        viewConfig.vmClazz = vmClazz;
+        return viewConfig;
+    }
+
+    public static ViewOpts makeMvp(int layout, Class pClazz) {
+        ViewOpts viewConfig = new ViewOpts();
         viewConfig.layout = layout;
         viewConfig.pClazz = pClazz;
         return viewConfig;
     }
 
-    public static ViewConfig makeEmpty() {
-        ViewConfig viewConfig = new ViewConfig();
+    public static ViewOpts makeEmpty() {
+        ViewOpts viewConfig = new ViewOpts();
         return viewConfig;
     }
 

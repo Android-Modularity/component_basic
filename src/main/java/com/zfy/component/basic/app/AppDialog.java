@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDialog;
 
+import com.zfy.component.basic.ComponentX;
 import com.zfy.component.basic.R;
 import com.zfy.component.basic.app.data.DialogAttr;
 import com.zfy.component.basic.foundation.X;
@@ -31,6 +32,7 @@ public abstract class AppDialog extends AppCompatDialog {
     public AppDialog(Context context, int theme, Bundle arguments) {
         super(context, theme);
         this.mArguments = arguments;
+        ComponentX.inject(this);
         setContentView(getLayoutId());
         ButterKnife.bind(this);
         X.registerEvent(this);

@@ -3,7 +3,7 @@ package com.zfy.component.basic.mvx.mvvm.app;
 
 import android.support.annotation.NonNull;
 
-import com.zfy.component.basic.mvx.mvvm.BaseViewModel;
+import com.zfy.component.basic.mvx.model.AppRepository;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -11,17 +11,13 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * CreateAt : 2018/9/12
- * Describe : 注解帮助生成 ViewConfig
+ * Describe : 注解帮助生成 ViewOpts
  *
  * @author chendong
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-public @interface VM {
+public @interface MVVM$VM {
 
-    int layout();
-
-    @NonNull Class vm() default BaseViewModel.class;
-
-    int vmId() default 0;
+    @NonNull Class<? extends AppRepository> repo() default AppRepository.class;
 }

@@ -30,6 +30,7 @@ public class ApiOptions {
     private boolean saveCookie;
     private boolean debug;
     private boolean useCache;
+    private int     cacheMilliSeconds;
 
     private Consumer<OkHttpClient.Builder>    okHttpRewriter;
     private Consumer<Retrofit.Builder>        retrofitRewriter;
@@ -78,6 +79,10 @@ public class ApiOptions {
         return useCache;
     }
 
+    public int getCacheMilliSeconds() {
+        return cacheMilliSeconds;
+    }
+
     public static class Builder {
 
         private String              baseUrl; // base url
@@ -87,6 +92,7 @@ public class ApiOptions {
         private boolean             saveCookie; // 是否使用 cookie
         private boolean             debug; // 是否为调试模式
         private boolean             useCache; // 是否使用缓存
+        private int                 cacheMilliSeconds; // 缓存时效
 
         private Consumer<OkHttpClient.Builder>    okHttpRewriter; // 重写 okhttp
         private Consumer<Retrofit.Builder>        retrofitRewriter; // 重写 retrofit
@@ -105,6 +111,7 @@ public class ApiOptions {
             options.okHttpRewriter = okHttpRewriter;
             options.retrofitRewriter = retrofitRewriter;
             options.observerFactory = observerFactory;
+            options.cacheMilliSeconds = cacheMilliSeconds;
             return options;
         }
 
@@ -129,6 +136,11 @@ public class ApiOptions {
 
         public Builder setUseCache(boolean useCache) {
             this.useCache = useCache;
+            return this;
+        }
+
+        public Builder setCacheMilliSeconds(int cacheMilliSeconds) {
+            this.cacheMilliSeconds = cacheMilliSeconds;
             return this;
         }
 

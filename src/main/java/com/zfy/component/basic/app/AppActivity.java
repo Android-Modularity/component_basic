@@ -12,7 +12,7 @@ import com.zfy.component.basic.app.view.IElegantView;
 import com.zfy.component.basic.app.view.IInitFlow;
 import com.zfy.component.basic.app.view.IOnResultView;
 import com.zfy.component.basic.app.view.IView;
-import com.zfy.component.basic.app.view.ViewConfig;
+import com.zfy.component.basic.app.view.ViewOpts;
 import com.zfy.component.basic.foundation.api.IApiAnchor;
 
 /**
@@ -21,7 +21,8 @@ import com.zfy.component.basic.foundation.api.IApiAnchor;
  *
  * @author chendong
  */
-public abstract class AppActivity extends AppCompatActivity implements IElegantView, IView, IBaseView, IInitFlow, IOnResultView, IApiAnchor {
+public abstract class AppActivity extends AppCompatActivity
+        implements IElegantView, IView, IBaseView, IInitFlow, IOnResultView, IApiAnchor {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,7 +47,7 @@ public abstract class AppActivity extends AppCompatActivity implements IElegantV
     }
 
     @Override
-    public ViewConfig getViewConfig() {
+    public ViewOpts getViewOpts() {
         return null;
     }
 

@@ -23,12 +23,12 @@ import com.zfy.component.basic.ComponentX;
 import com.zfy.component.basic.app.view.IBaseView;
 import com.zfy.component.basic.app.view.IOnResultView;
 import com.zfy.component.basic.app.view.IView;
-import com.zfy.component.basic.app.view.ViewConfig;
+import com.zfy.component.basic.app.view.ViewOpts;
 import com.zfy.component.basic.foundation.X;
 import com.zfy.component.basic.foundation.api.Api;
 import com.zfy.component.basic.foundation.api.IApiAnchor;
 import com.zfy.component.basic.mvx.mvp.IMvpView;
-import com.zfy.component.basic.mvx.mvp.app.MvpPluginView;
+import com.zfy.component.basic.mvx.mvp.app.MvpFunctionView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +52,9 @@ public abstract class AppDelegate implements IDelegate {
 
     private Handler mHandler;
 
-    protected Object     mHost;
-    protected ViewConfig mViewConfig;
-    private   Unbinder   mUnBinder;
+    protected Object   mHost;
+    protected ViewOpts mViewOpts;
+    private   Unbinder mUnBinder;
 
     private List<Destroyable>   mDestroyableList;
     private List<Disposable>    mDisposables;
@@ -129,21 +129,21 @@ public abstract class AppDelegate implements IDelegate {
     }
 
     @Override
-    public void bindPluginView(MvpPluginView mvpPluginView, Object host) {
-        if (host instanceof IMvpView) {
+    public void bindFunctionView(AppFunctionView functionView, Object host) {
+        if (host instanceof IBaseView) {
             mBundle = ((IMvpView) host).getData();
         }
-        // NoLayoutView 绑定到 Host 生命周期等
         IDelegate hostDelegate = null;
+        // 获取 host 代理
         if (host instanceof IView) {
             hostDelegate = ((IView) host).getViewDelegate();
         }
         if (hostDelegate != null) {
-            hostDelegate.addDestroyable(mvpPluginView);
-            hostDelegate.addOnResultView(mvpPluginView);
+            hostDelegate.addDestroyable(functionView);
+            hostDelegate.addOnResultView(functionView);
         }
-        attachHost(mvpPluginView);
-        onBindPluginView(mvpPluginView, host);
+        attachHost(functionView);
+        onBindFunctionView(functionView, host);
     }
 
     @Override
@@ -158,6 +158,11 @@ public abstract class AppDelegate implements IDelegate {
             mBundle = new Bundle();
         }
         return mBundle;
+    }
+
+    @Override
+    public Handler getHandler() {
+        return mHandler;
     }
 
     @Override
@@ -227,7 +232,7 @@ public abstract class AppDelegate implements IDelegate {
 
     }
 
-    public void onBindPluginView(LifecycleOwner owner, Object host) {
+    public void onBindFunctionView(AppFunctionView view, Object host) {
 
     }
 
@@ -236,8 +241,8 @@ public abstract class AppDelegate implements IDelegate {
     }
 
     /**
-     * @param host   当前需要绑定的 对象
-     * @param binder findViewById 对象
+     * @param host   当前需要绑定的 对象，也就是属性在的对象
+     * @param binder findViewById 对象，也就是能获取组件的对象
      */
     protected void bindView(Object host, Object binder) {
         if (host instanceof AppActivity) {
@@ -246,7 +251,7 @@ public abstract class AppDelegate implements IDelegate {
             mUnBinder = ButterKnife.bind(host, (View) binder);
         } else if (host instanceof AppDialogFragment && binder instanceof View) {
             mUnBinder = ButterKnife.bind(host, (View) binder);
-        } else if (host instanceof MvpPluginView) {
+        } else if (host instanceof MvpFunctionView) {
             if (binder instanceof AppActivity) {
                 mUnBinder = ButterKnife.bind(host, (AppActivity) binder);
             } else if (binder instanceof AppFragment) {
@@ -269,14 +274,13 @@ public abstract class AppDelegate implements IDelegate {
         ComponentX.inject(host);
         mHost = host;
         mLifecycleOwner = host;
-        if (host instanceof IView && ((IView) host).getViewConfig() != null) {
-            mViewConfig = ((IView) host).getViewConfig();
+        if (host instanceof IView && ((IView) host).getViewOpts() != null) {
+            mViewOpts = ((IView) host).getViewOpts();
         }
         onAttachHost(host);
-        if (mViewConfig == null) {
-            throw new IllegalStateException("require ViewConfig");
+        if (mViewOpts == null) {
+            throw new IllegalStateException("require ViewOpts");
         }
     }
-
 
 }

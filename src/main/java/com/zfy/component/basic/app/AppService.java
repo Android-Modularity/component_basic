@@ -12,7 +12,7 @@ import android.support.annotation.NonNull;
 import com.march.common.mgrs.ActivityMgr;
 import com.zfy.component.basic.app.view.IElegantView;
 import com.zfy.component.basic.app.view.IView;
-import com.zfy.component.basic.app.view.ViewConfig;
+import com.zfy.component.basic.app.view.ViewOpts;
 import com.zfy.component.basic.foundation.api.IApiAnchor;
 
 /**
@@ -60,8 +60,8 @@ public abstract class AppService extends Service implements IElegantView, IView,
     }
 
     @Override
-    public ViewConfig getViewConfig() {
-        return ViewConfig.makeEmpty();
+    public ViewOpts getViewOpts() {
+        return ViewOpts.makeEmpty();
     }
 
     @NonNull

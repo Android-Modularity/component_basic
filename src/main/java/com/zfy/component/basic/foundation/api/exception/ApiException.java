@@ -32,6 +32,7 @@ public class ApiException extends IllegalStateException {
     public static final int CODE_CONNECT_ERROR = 6; // 连接错误
     public static final int CODE_SSL_ERROR     = 7; // 握手错误
     public static final int CODE_TIMEOUT_ERROR = 8; // 超时
+    public static final int CODE_DATA_NULL = 9; // data null
 
     public int       code;
     public String    msg;

@@ -4,9 +4,11 @@ import android.content.Context;
 
 import com.alibaba.android.arouter.facade.template.IProvider;
 import com.march.common.x.EmptyX;
-import com.zfy.component.basic.route.Router;
+import com.zfy.component.basic.app.AppDialog;
 import com.zfy.component.basic.mvx.mvp.IMvpView;
 import com.zfy.component.basic.mvx.mvp.presenter.MvpPresenter;
+import com.zfy.component.basic.mvx.mvvm.MvvmViewModel;
+import com.zfy.component.basic.route.Router;
 import com.zfy.mantis.api.provider.BundleProvider;
 import com.zfy.mantis.api.provider.IDataProvider;
 import com.zfy.mantis.api.provider.IObjProvider;
@@ -25,6 +27,12 @@ public class BasicProviderCallbackImpl extends ProviderCallbackImpl {
         if (target instanceof MvpPresenter) {
             IMvpView view = ((MvpPresenter) target).getView();
             return BundleProvider.use(view.getData());
+        }
+        if (target instanceof AppDialog) {
+            return BundleProvider.use(((AppDialog) target).getArguments());
+        }
+        if (target instanceof MvvmViewModel) {
+            return BundleProvider.use(((MvvmViewModel) target).getData());
         }
         return super.getDataProvider(target);
     }

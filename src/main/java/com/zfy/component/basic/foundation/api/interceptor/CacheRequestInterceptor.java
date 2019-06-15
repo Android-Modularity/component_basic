@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.march.common.x.EmptyX;
 import com.march.common.x.NetX;
+import com.zfy.component.basic.foundation.api.Api;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -36,8 +37,8 @@ public class CacheRequestInterceptor extends AbstractInterceptor {
             // 有网络时，返回 10s 内的缓存，允许过期 10s，避免频繁请求
             return request.newBuilder()
                     .cacheControl(new CacheControl.Builder()
-                            .maxAge(10, TimeUnit.SECONDS)
-                            .maxStale(10, TimeUnit.SECONDS)
+                            .maxAge(Api.config().getCacheMilliSeconds(), TimeUnit.MILLISECONDS)
+                            .maxStale(Api.config().getCacheMilliSeconds(), TimeUnit.MILLISECONDS)
                             .build())
                     .build();
         }

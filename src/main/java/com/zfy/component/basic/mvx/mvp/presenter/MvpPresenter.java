@@ -18,7 +18,7 @@ public abstract class MvpPresenter<R extends IRepository, V extends IMvpView> im
     protected R mRepo;
 
     public MvpPresenter() {
-        mRepo = makeRepo();
+        mRepo = newRepo();
         X.registerEvent(this);
     }
 
@@ -45,6 +45,10 @@ public abstract class MvpPresenter<R extends IRepository, V extends IMvpView> im
             e.printStackTrace();
         }
         return repo;
+    }
+
+    protected R newRepo() {
+        return makeRepo();
     }
 
     @Override

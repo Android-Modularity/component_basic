@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import com.alibaba.android.arouter.facade.Postcard;
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.march.common.funcs.Consumer;
+import com.zfy.component.basic.R;
 
 /**
  * CreateAt : 2019/1/24
@@ -166,13 +167,17 @@ public class Router {
     }
 
 
+    public static Postcard wrap(Postcard postcard) {
+        return postcard.withTransition(R.anim.act_translate_in, R.anim.act_no_anim);
+    }
+
     /**
      * 路由1
      *
      * @param url 路径
      */
     public static void open(Context context, String url, Bundle bundle) {
-        ARouter.getInstance().build(url).with(bundle).navigation(context);
+        wrap(ARouter.getInstance().build(url).with(bundle)).navigation(context);
     }
 
     /**
@@ -181,8 +186,7 @@ public class Router {
      * @param uri uri
      */
     public static void open(Context context, Uri uri, Bundle bundle) {
-        ARouter.getInstance().build(uri).with(bundle).navigation(context);
-
+        wrap(ARouter.getInstance().build(uri).with(bundle)).navigation(context);
     }
 
     /**
@@ -191,7 +195,7 @@ public class Router {
      * @param url 路径
      */
     public static void open(Context context, String url) {
-        ARouter.getInstance().build(url).navigation(context);
+        wrap(ARouter.getInstance().build(url)).navigation(context);
     }
 
 
@@ -201,7 +205,7 @@ public class Router {
      * @param uri uri
      */
     public static void open(Context context, Uri uri) {
-        ARouter.getInstance().build(uri).navigation(context);
+        wrap(ARouter.getInstance().build(uri)).navigation(context);
     }
 
     /**
@@ -210,7 +214,7 @@ public class Router {
      * @param url 路径
      */
     public static Postcard openNav(String url) {
-        return ARouter.getInstance().build(url);
+        return wrap(ARouter.getInstance().build(url));
     }
 
     /**
@@ -219,7 +223,7 @@ public class Router {
      * @param uri uri
      */
     public static Postcard openNav(Uri uri) {
-        return ARouter.getInstance().build(uri);
+        return wrap(ARouter.getInstance().build(uri));
     }
 
 }

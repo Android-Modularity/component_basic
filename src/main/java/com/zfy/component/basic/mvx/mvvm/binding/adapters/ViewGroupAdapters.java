@@ -1,4 +1,4 @@
-package com.zfy.component.basic.mvx.mvvm.binding.adapters;
+package com.zfy.component.basic.mvx.mvvm.adapters;
 
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableList;
