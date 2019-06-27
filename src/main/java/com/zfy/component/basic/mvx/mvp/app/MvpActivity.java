@@ -1,10 +1,9 @@
 package com.zfy.component.basic.mvx.mvp.app;
 
 import com.zfy.component.basic.app.AppActivity;
-import com.zfy.component.basic.app.AppDelegate;
 import com.zfy.component.basic.app.IDelegate;
-import com.zfy.component.basic.mvx.mvp.IMvpPresenter;
 import com.zfy.component.basic.mvx.mvp.IExtendsMvpView;
+import com.zfy.component.basic.mvx.mvp.IMvpPresenter;
 
 /**
  * CreateAt : 2018/10/11

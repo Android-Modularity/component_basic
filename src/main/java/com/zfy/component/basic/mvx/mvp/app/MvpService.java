@@ -4,11 +4,10 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import com.zfy.component.basic.app.AppDelegate;
 import com.zfy.component.basic.app.AppService;
 import com.zfy.component.basic.app.IDelegate;
-import com.zfy.component.basic.mvx.mvp.IMvpPresenter;
 import com.zfy.component.basic.mvx.mvp.IExtendsMvpView;
+import com.zfy.component.basic.mvx.mvp.IMvpPresenter;
 
 /**
  * CreateAt : 2018/11/22

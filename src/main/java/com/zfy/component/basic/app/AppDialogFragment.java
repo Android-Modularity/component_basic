@@ -33,13 +33,15 @@ public abstract class AppDialogFragment extends DialogFragment
 
     protected View mContentView;
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.dialog_theme);
+        setStyle(DialogFragment.STYLE_NO_FRAME, getDialogStyle());
     }
 
+    public int getDialogStyle() {
+        return R.style.dialog_theme;
+    }
 
     @Nullable
     @Override

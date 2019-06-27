@@ -39,8 +39,7 @@ public class ViewOpts {
     }
 
     public static ViewOpts makeEmpty() {
-        ViewOpts viewConfig = new ViewOpts();
-        return viewConfig;
+        return new ViewOpts();
     }
 
 

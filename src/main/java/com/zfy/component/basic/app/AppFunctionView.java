@@ -26,7 +26,8 @@ import com.zfy.component.basic.foundation.api.IApiAnchor;
  *
  * @author chendong
  */
-public abstract class AppFunctionView<HOST> implements LifecycleOwner, IElegantView, Destroyable, IOnResultView, IBaseView, IApiAnchor, IView {
+public abstract class AppFunctionView<HOST>
+        implements LifecycleOwner, IElegantView, Destroyable, IOnResultView, IBaseView, IApiAnchor, IView {
 
     protected HOST mHostView;
 
@@ -109,4 +110,5 @@ public abstract class AppFunctionView<HOST> implements LifecycleOwner, IElegantV
     public HOST getHostView() {
         return mHostView;
     }
+
 }

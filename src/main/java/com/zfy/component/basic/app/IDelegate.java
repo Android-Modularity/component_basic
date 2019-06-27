@@ -13,7 +13,8 @@ import android.view.ViewGroup;
 import com.march.common.able.Destroyable;
 import com.zfy.component.basic.app.view.IOnResultView;
 import com.zfy.component.basic.foundation.api.IApiAnchor;
-import com.zfy.component.basic.mvx.mvp.app.MvpFunctionView;
+
+import java.util.Map;
 
 import io.reactivex.disposables.Disposable;
 
@@ -30,6 +31,8 @@ public interface IDelegate extends Destroyable, LifecycleOwner, IOnResultView, I
     void addObserver(@NonNull LifecycleObserver observer);
 
     void addOnResultView(IOnResultView view);
+
+    Map<String,Object> getInstMap();
 
     void addDisposable(Disposable disposable);
 

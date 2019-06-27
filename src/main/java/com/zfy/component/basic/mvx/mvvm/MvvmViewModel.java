@@ -3,13 +3,18 @@ package com.zfy.component.basic.mvx.mvvm;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.LifecycleOwner;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.march.common.x.EmptyX;
+import com.zfy.component.basic.ComponentX;
+import com.zfy.component.basic.Const;
 import com.zfy.component.basic.app.view.IView;
 import com.zfy.component.basic.foundation.X;
 import com.zfy.component.basic.foundation.api.Api;
 import com.zfy.component.basic.foundation.api.IApiAnchor;
+import com.zfy.mantis.api.Mantis;
 
 /**
  * CreateAt : 2018/9/11
@@ -24,8 +29,6 @@ public abstract class MvvmViewModel extends AndroidViewModel implements Lifecycl
     public MvvmViewModel(@NonNull Application application) {
         super(application);
         X.registerEvent(this);
-        // 第一次创建时调用 init
-        init();
     }
 
     public void onMvvmViewAttach(IMvvmView view) {
@@ -36,13 +39,19 @@ public abstract class MvvmViewModel extends AndroidViewModel implements Lifecycl
             ((IView) view).getViewDelegate().addObserver(this);
         }
         bundle = view.getData();
+
+        // 注入 repo
+        Mantis.inject(Const.REPO, this);
+        ComponentX.inject(this);
+
+        init();
+
     }
 
-    public @NonNull
-    Bundle getData() {
+    @NonNull
+    public Bundle getData() {
         return bundle;
     }
-
 
     /**
      * View 层会在 ViewModel 创建后调用 init() 方法
@@ -64,5 +73,24 @@ public abstract class MvvmViewModel extends AndroidViewModel implements Lifecycl
         Api.queue().cancelRequest(this);
     }
 
+
+    // 事件
+    private ExLiveData<String> liveCommand;
+
+    // 注册事件
+    public void subscribe(@NonNull LifecycleOwner owner, @NonNull ExLiveData.NonNullObserver<String> observer) {
+        if (liveCommand == null) {
+            liveCommand = new ExLiveData<>("");
+        }
+        liveCommand.observeNonNull(owner, observer);
+    }
+
+    // 发布事件
+    protected void publish(String command) {
+        if (EmptyX.isEmpty(command)) {
+            return;
+        }
+        liveCommand.postValue(command);
+    }
 
 }

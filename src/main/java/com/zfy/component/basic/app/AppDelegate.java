@@ -21,17 +21,18 @@ import com.march.common.x.ListX;
 import com.march.common.x.RecycleX;
 import com.zfy.component.basic.ComponentX;
 import com.zfy.component.basic.app.view.IBaseView;
+import com.zfy.component.basic.app.view.IElegantView;
 import com.zfy.component.basic.app.view.IOnResultView;
 import com.zfy.component.basic.app.view.IView;
 import com.zfy.component.basic.app.view.ViewOpts;
 import com.zfy.component.basic.foundation.X;
 import com.zfy.component.basic.foundation.api.Api;
 import com.zfy.component.basic.foundation.api.IApiAnchor;
-import com.zfy.component.basic.mvx.mvp.IMvpView;
-import com.zfy.component.basic.mvx.mvp.app.MvpFunctionView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -60,6 +61,7 @@ public abstract class AppDelegate implements IDelegate {
     private List<Disposable>    mDisposables;
     private List<IOnResultView> mOnResultViews;
 
+    private Map<String, Object> mInstMap;
 
     @Override
     public void addObserver(@NonNull LifecycleObserver observer) {
@@ -72,6 +74,15 @@ public abstract class AppDelegate implements IDelegate {
             mOnResultViews = new ArrayList<>();
         }
         mOnResultViews.add(view);
+    }
+
+    @Override
+    public Map<String, Object> getInstMap() {
+        if (mInstMap == null) {
+            mInstMap = new HashMap<>();
+
+        }
+        return mInstMap;
     }
 
     @Override
@@ -131,7 +142,10 @@ public abstract class AppDelegate implements IDelegate {
     @Override
     public void bindFunctionView(AppFunctionView functionView, Object host) {
         if (host instanceof IBaseView) {
-            mBundle = ((IMvpView) host).getData();
+            mBundle = functionView.getData();
+        }
+        if (host instanceof IElegantView) {
+            mBundle = ((IElegantView) host).getData();
         }
         IDelegate hostDelegate = null;
         // 获取 host 代理
@@ -151,7 +165,6 @@ public abstract class AppDelegate implements IDelegate {
 
     }
 
-
     @Override
     public Bundle getBundle() {
         if (mBundle == null) {
@@ -167,6 +180,9 @@ public abstract class AppDelegate implements IDelegate {
 
     @Override
     public void onDestroy() {
+        if(mInstMap!=null) {
+            mInstMap.clear();
+        }
         X.unRegisterEvent(mHost);
         if (mUnBinder != null) {
             mUnBinder.unbind();
@@ -251,7 +267,7 @@ public abstract class AppDelegate implements IDelegate {
             mUnBinder = ButterKnife.bind(host, (View) binder);
         } else if (host instanceof AppDialogFragment && binder instanceof View) {
             mUnBinder = ButterKnife.bind(host, (View) binder);
-        } else if (host instanceof MvpFunctionView) {
+        } else if (host instanceof AppFunctionView) {
             if (binder instanceof AppActivity) {
                 mUnBinder = ButterKnife.bind(host, (AppActivity) binder);
             } else if (binder instanceof AppFragment) {
@@ -272,15 +288,33 @@ public abstract class AppDelegate implements IDelegate {
     private <T extends LifecycleOwner> void attachHost(T host) {
         // host
         ComponentX.inject(host);
+
         mHost = host;
         mLifecycleOwner = host;
         if (host instanceof IView && ((IView) host).getViewOpts() != null) {
             mViewOpts = ((IView) host).getViewOpts();
         }
+        // 注入 Layout
+        Layout annotation = mHost.getClass().getAnnotation(Layout.class);
+        if (annotation != null) {
+            if (mViewOpts == null || mViewOpts.getLayout() <= 0) {
+                if (mViewOpts == null) {
+                    mViewOpts = ViewOpts.makeEmpty();
+                }
+                int layout = annotation.value();
+                if (layout != 0) {
+                    mViewOpts.setLayout(layout);
+                }
+            }
+        }
         onAttachHost(host);
         if (mViewOpts == null) {
             throw new IllegalStateException("require ViewOpts");
         }
+    }
+
+    void resetBundle(Intent intent) {
+        this.mBundle = intent.getExtras();
     }
 
 }

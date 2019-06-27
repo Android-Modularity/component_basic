@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * CreateAt : 2018/9/12
- * Describe : 注解帮助生成 ViewOpts
+ * Describe : 注解帮助生成 ViewConfig
  *
  * @author chendong
  */

@@ -2,7 +2,6 @@ package com.zfy.component.basic.mvx.mvvm.app;
 
 import com.zfy.component.basic.app.AppActivity;
 import com.zfy.component.basic.mvx.mvvm.IMvvmView;
-import com.zfy.component.basic.mvx.mvvm.MvvmViewModel;
 
 /**
  * CreateAt : 2018/9/11
@@ -10,18 +9,13 @@ import com.zfy.component.basic.mvx.mvvm.MvvmViewModel;
  *
  * @author chendong
  */
-public abstract class MvvmActivity<VM extends MvvmViewModel>
-        extends AppActivity implements IMvvmView<VM> {
+public abstract class MvvmActivity extends AppActivity implements IMvvmView {
 
-    protected MvvmDelegate<VM> mDelegate = new MvvmDelegate<>();
+    protected MvvmDelegate mDelegate = new MvvmDelegate();
 
     @Override
-    public MvvmDelegate<VM> getViewDelegate() {
+    public MvvmDelegate getViewDelegate() {
         return mDelegate;
     }
 
-    @Override
-    public VM viewModel() {
-        return mDelegate.viewModel();
-    }
 }

@@ -81,8 +81,8 @@ public class BindingLayoutManagers implements LayoutManagers.LayoutManagerFactor
         return this;
     }
 
-    public BindingLayoutManagers spanSizeLookup(GridLayoutManager.SpanSizeLookup lookup) {
-        this.spanSizeLookup = lookup;
+    public BindingLayoutManagers spanSizeLookup(GridLayoutManager.SpanSizeLookup Lookup) {
+        this.spanSizeLookup = Lookup;
         return this;
     }
 }

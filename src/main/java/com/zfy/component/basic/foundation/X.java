@@ -2,6 +2,8 @@ package com.zfy.component.basic.foundation;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
 import android.content.Intent;
 import android.view.Window;
 import android.view.WindowManager;
@@ -108,14 +110,12 @@ public class X {
     public static void finish(Activity activity) {
         if (activity != null) {
             activity.finish();
-            ActivityAnimX.translateFinish(activity);
         }
     }
 
     public static void start(Activity activity, Intent intent) {
         if (activity != null) {
             activity.startActivity(intent);
-            ActivityAnimX.translateStart(activity);
         }
     }
 

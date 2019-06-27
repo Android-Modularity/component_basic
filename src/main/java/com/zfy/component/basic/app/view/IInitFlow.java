@@ -14,10 +14,15 @@ public interface IInitFlow {
      * @return 结束 View 装载
      */
      boolean preViewAttach();
+
     /**
      * 数据初始化之前
      */
     void preInit();
+
+
+    default void postInit() {
+    }
 
     /**
      * 数据初始化

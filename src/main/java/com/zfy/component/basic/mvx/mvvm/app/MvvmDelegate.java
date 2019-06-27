@@ -6,11 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.zfy.component.basic.Const;
 import com.zfy.component.basic.app.AppDelegate;
 import com.zfy.component.basic.app.AppFunctionView;
-import com.zfy.component.basic.app.view.ViewOpts;
-import com.zfy.component.basic.mvx.mvp.app.MvpFunctionView;
-import com.zfy.component.basic.mvx.mvvm.MvvmViewModel;
+import com.zfy.mantis.api.Mantis;
 
 /**
  * CreateAt : 2018/9/12
@@ -18,21 +17,15 @@ import com.zfy.component.basic.mvx.mvvm.MvvmViewModel;
  *
  * @author chendong
  */
-public class MvvmDelegate<VideoModel extends MvvmViewModel> extends AppDelegate {
+public class MvvmDelegate extends AppDelegate {
 
     public static final String TAG = MvvmDelegate.class.getSimpleName();
 
     @Override
     public void onAttachHost(Object host) {
-        if (mViewOpts == null) {
-            MVVM$V annotation = mHost.getClass().getAnnotation(MVVM$V.class);
-            if (annotation != null) {
-                int layout = annotation.layout();
-                Class<? extends MvvmViewModel> vm = annotation.vm();
-                if (layout != 0) {
-                    mViewOpts = ViewOpts.makeMvvm(layout, vm);
-                }
-            }
+        Mantis.inject(Const.VM, host);
+        if (host instanceof Fragment) {
+            Mantis.inject(Const.ACTIVITY_VM, host);
         }
     }
 
@@ -49,6 +42,7 @@ public class MvvmDelegate<VideoModel extends MvvmViewModel> extends AppDelegate 
     public void onBindActivity(Activity owner) {
         owner.setContentView(mViewOpts.getLayout());
         bindView(mHost, null);
+        bindEvent();
         init();
     }
 
@@ -65,10 +59,5 @@ public class MvvmDelegate<VideoModel extends MvvmViewModel> extends AppDelegate 
 
     private void init() {
 
-    }
-
-    @SuppressWarnings("unchecked")
-    VideoModel viewModel() {
-        return (VideoModel) MvvmHook.useViewModel(mHost, mViewOpts.getVmClazz());
     }
 }

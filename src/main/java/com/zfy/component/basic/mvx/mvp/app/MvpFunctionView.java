@@ -2,7 +2,6 @@ package com.zfy.component.basic.mvx.mvp.app;
 
 import com.march.common.able.Destroyable;
 import com.zfy.component.basic.app.AppFunctionView;
-import com.zfy.component.basic.app.IDelegate;
 import com.zfy.component.basic.app.view.IBaseView;
 import com.zfy.component.basic.app.view.IOnResultView;
 import com.zfy.component.basic.app.view.IView;
@@ -19,17 +18,25 @@ import com.zfy.component.basic.mvx.mvp.IMvpView;
  *
  * @author chendong
  */
-public class MvpFunctionView<HOST extends IMvpView, P extends IMvpPresenter> extends AppFunctionView<HOST>
+public abstract class MvpFunctionView<HOST extends IMvpView, P extends IMvpPresenter> extends AppFunctionView<HOST>
         implements IExtendsMvpView<P>, Destroyable, IOnResultView, IBaseView, IApiAnchor, IView {
 
-    private MvpDelegate<P> mDelegate = new MvpDelegate<>();
+    private MvpDelegate<P> mDelegate;
 
     public MvpFunctionView(HOST view) {
         super(view);
     }
 
     @Override
-    public IDelegate getViewDelegate() {
+    public void init() {
+
+    }
+
+    @Override
+    public MvpDelegate<P> getViewDelegate() {
+        if (mDelegate == null) {
+            mDelegate = new MvpDelegate<>();
+        }
         return mDelegate;
     }
 

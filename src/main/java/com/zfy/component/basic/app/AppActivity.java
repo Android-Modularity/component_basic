@@ -33,7 +33,17 @@ public abstract class AppActivity extends AppCompatActivity
         getViewDelegate().bindActivity(this);
         preInit();
         init();
+        postInit();
         getViewDelegate().onHostInit();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        IDelegate delegate = getViewDelegate();
+        if (delegate instanceof AppDelegate) {
+            ((AppDelegate) delegate).resetBundle(intent);
+        }
     }
 
     @Override
@@ -43,6 +53,11 @@ public abstract class AppActivity extends AppCompatActivity
 
     @Override
     public void preInit() {
+
+    }
+
+    @Override
+    public void postInit() {
 
     }
 

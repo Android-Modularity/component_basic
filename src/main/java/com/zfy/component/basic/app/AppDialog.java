@@ -32,11 +32,9 @@ public abstract class AppDialog extends AppCompatDialog {
     public AppDialog(Context context, int theme, Bundle arguments) {
         super(context, theme);
         this.mArguments = arguments;
-        ComponentX.inject(this);
         setContentView(getLayoutId());
         ButterKnife.bind(this);
         X.registerEvent(this);
-        initOnCreate();
     }
 
     // 仅在第一次 show 时调用
@@ -44,6 +42,11 @@ public abstract class AppDialog extends AppCompatDialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         X.setDialogAttributes(this, getAttr());
+
+        ComponentX.inject(this);
+
+
+        initOnCreate();
     }
 
     // 构造方法里面调用，此时 View/Event 已经绑定
@@ -58,11 +61,15 @@ public abstract class AppDialog extends AppCompatDialog {
     // 获取弹窗属性
     protected abstract DialogAttr getAttr();
 
-
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         X.unRegisterEvent(this);
+    }
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
     }
 
     public Bundle getArguments() {

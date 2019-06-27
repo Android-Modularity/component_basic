@@ -8,7 +8,6 @@ import com.zfy.component.basic.app.view.IElegantView;
  *
  * @author chendong
  */
-public interface IMvvmView<VM extends MvvmViewModel> extends IElegantView {
+public interface IMvvmView extends IElegantView {
 
-    VM viewModel();
 }
