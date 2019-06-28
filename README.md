@@ -35,10 +35,8 @@
     - app.gradle
     - module.gradle
     - project.gradle
-    - utils.gradle
 - products/
 - publish/
-
 
 
 ## Component Design

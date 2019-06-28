@@ -1,9 +1,10 @@
 apply from: '../scripts/module.gradle'
+//apply plugin: 'kotlin-android-extensions'
+//apply plugin: 'kotlin-android'
 
 dependencies {
     // 基础库
     api deps.mantisApi
-    api deps.mantisAnnotation
     api deps.common
     api deps.multidex
     // 基础 UI
@@ -35,11 +36,15 @@ dependencies {
     api deps.lifecycle_extensions
     api deps.lifecycle_runtime
     // binding adapter
-    api deps.bindingAdapter
-    api deps.bindingAdapterRv
+//    api deps.bindingAdapter
+//    api deps.bindingAdapterRv
 
     add('annotationProcessor', deps.butterknifeProcessor, {})
     add('annotationProcessor', deps.arouterCompiler, {})
     add('annotationProcessor', deps.lifecycle_compiler, {})
     add('annotationProcessor', deps.mantis_compiler, {})
+//    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }
