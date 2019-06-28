@@ -29,14 +29,12 @@ public class MvpDelegate<P extends IMvpPresenter> extends AppDelegate {
 
     @Override
     public void onAttachHost(Object host) {
-        if (mViewOpts == null) {
-            MvpV annotation = mHost.getClass().getAnnotation(MvpV.class);
-            if (annotation != null) {
-                int layout = annotation.layout();
-                Class pClazz = annotation.p();
-                if (layout != 0) {
-                    mViewOpts = ViewOpts.makeMvp(layout, pClazz);
-                }
+        MvpV annotation = mHost.getClass().getAnnotation(MvpV.class);
+        if (annotation != null) {
+            int layout = annotation.layout();
+            Class pClazz = annotation.p();
+            if (layout != 0) {
+                mViewOpts = ViewOpts.makeMvp(layout, pClazz);
             }
         }
     }
@@ -45,7 +43,6 @@ public class MvpDelegate<P extends IMvpPresenter> extends AppDelegate {
     protected View onBindFragment(android.support.v4.app.Fragment owner, LayoutInflater inflater, ViewGroup container) {
         View inflate = inflater.inflate(mViewOpts.getLayout(), container, false);
         bindView(mHost, inflate);
-        bindEvent();
         init();
         return inflate;
     }
@@ -55,7 +52,6 @@ public class MvpDelegate<P extends IMvpPresenter> extends AppDelegate {
         try {
             owner.setContentView(mViewOpts.getLayout());
             bindView(mHost, null);
-            bindEvent();
             init();
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,7 +60,6 @@ public class MvpDelegate<P extends IMvpPresenter> extends AppDelegate {
 
     @Override
     protected void onBindService(Service owner) {
-        bindEvent();
         init();
     }
 
@@ -74,7 +69,6 @@ public class MvpDelegate<P extends IMvpPresenter> extends AppDelegate {
             throw new IllegalArgumentException("view must be AppFunctionView");
         }
         bindView(mHost, host);
-        bindEvent();
         init();
     }
 

@@ -41,11 +41,8 @@ public abstract class MvvmViewModel extends AndroidViewModel implements Lifecycl
         bundle = view.getData();
 
         // 注入 repo
-        Mantis.inject(Const.REPO, this);
         ComponentX.inject(this);
-
         init();
-
     }
 
     @NonNull

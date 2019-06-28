@@ -6,10 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.zfy.component.basic.Const;
 import com.zfy.component.basic.app.AppDelegate;
 import com.zfy.component.basic.app.AppFunctionView;
-import com.zfy.mantis.api.Mantis;
 
 /**
  * CreateAt : 2018/9/12
@@ -23,17 +21,13 @@ public class MvvmDelegate extends AppDelegate {
 
     @Override
     public void onAttachHost(Object host) {
-        Mantis.inject(Const.VM, host);
-        if (host instanceof Fragment) {
-            Mantis.inject(Const.ACTIVITY_VM, host);
-        }
+
     }
 
     @Override
     public View onBindFragment(Fragment owner, LayoutInflater inflater, ViewGroup container) {
         View inflate = inflater.inflate(mViewOpts.getLayout(), container, false);
         bindView(mHost, inflate);
-        bindEvent();
         init();
         return inflate;
     }
@@ -42,7 +36,6 @@ public class MvvmDelegate extends AppDelegate {
     public void onBindActivity(Activity owner) {
         owner.setContentView(mViewOpts.getLayout());
         bindView(mHost, null);
-        bindEvent();
         init();
     }
 
@@ -53,7 +46,6 @@ public class MvvmDelegate extends AppDelegate {
             throw new IllegalArgumentException("view must be MvvmFunctionView");
         }
         bindView(mHost, host);
-        bindEvent();
         init();
     }
 

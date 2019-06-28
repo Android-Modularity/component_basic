@@ -38,11 +38,9 @@ public abstract class AppDialog2 extends AppCompatDialog {
 
     public AppDialog2(Context context, int theme) {
         super(context, theme);
-        LogX.e("chendong", "super 构造方法");
         setContentView(getLayoutId());
         ButterKnife.bind(this);
         X.registerEvent(this);
-        LogX.e("chendong", "super initOnCreate");
         initOnConstruct();
     }
 

@@ -2,13 +2,10 @@ package com.zfy.component.basic.foundation;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.Intent;
 import android.content.Intent;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.march.common.x.ActivityAnimX;
 import com.zfy.component.basic.R;
 import com.zfy.component.basic.app.IDelegate;
 import com.zfy.component.basic.app.data.DialogAttr;
@@ -68,6 +65,9 @@ public class X {
      * @return 实例
      */
     public static <T> T newInst(Class<T> clazz) {
+        if (clazz == null) {
+            return null;
+        }
         T t;
         try {
             t = clazz.newInstance();

@@ -8,8 +8,12 @@ package com.zfy.component.basic;
  */
 public class Const {
 
-    public static final int REPO        = 100; // 注解生成 repository
-    public static final int ACTIVITY_VM = 102; // 注解生成 viewModel
-    public static final int VM          = 103; // 注解生成 viewModel
+    public static final String REPO   = "REPO"; // repository
+    public static final String VM     = "VM"; // viewModel
+    public static final String VM_ACT = "VM_ACT"; // activity view model
+
+
+    public static final String MVP_P = "MVP_P"; // viewModel
+    public static final String MVP_V = "MVP_V"; // viewModel
 
 }

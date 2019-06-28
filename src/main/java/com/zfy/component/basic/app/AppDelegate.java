@@ -286,8 +286,7 @@ public abstract class AppDelegate implements IDelegate {
 
 
     private <T extends LifecycleOwner> void attachHost(T host) {
-        // host
-        ComponentX.inject(host);
+
 
         mHost = host;
         mLifecycleOwner = host;
@@ -307,10 +306,14 @@ public abstract class AppDelegate implements IDelegate {
                 }
             }
         }
+        bindEvent();
         onAttachHost(host);
         if (mViewOpts == null) {
             throw new IllegalStateException("require ViewOpts");
         }
+
+        // host
+        ComponentX.inject(host);
     }
 
     void resetBundle(Intent intent) {
