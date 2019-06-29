@@ -10,7 +10,7 @@ if (new File(componentsPath).exists()) {
 
 android {
     defaultConfig {
-        if (project.hasProperty('entryComponent')) {
+        if (project.hasProperty('componentEnable') && "${project.componentEnable}"=='true') {
             manifestPlaceholders.entryActivity = findComponentEntryActivity()
         }
         buildConfigField "String[]", "COMP_SERVICES", findComponentServices()
@@ -27,7 +27,7 @@ def getMyComps() {
 
 def findComponentEntryActivity() {
     String entryActivity = ''
-    if (project.hasProperty('entryComponent')) {
+    if (project.hasProperty('componentEnable') && "${project.componentEnable}"=='true') {
         def defEntryComponent = project.entryComponent
         def localComps = getMyComps()
         if (defEntryComponent && defEntryComponent.length() > 0) {
@@ -44,7 +44,7 @@ def findComponentEntryActivity() {
 
 def findComponentServices() {
     String services = '{'
-    if (project.hasProperty('entryComponent')) {
+    if (project.hasProperty('componentEnable') && "${project.componentEnable}"=='true') {
         def defEntryComponent = project.entryComponent
         def localComps = getMyComps()
         if (defEntryComponent && defEntryComponent.length() > 0) {
