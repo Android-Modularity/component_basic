@@ -1,6 +1,15 @@
-<manifest package="com.zfy.component.basic">
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.zfy.component.basic">
     <application>
+
+        <activity-alias
+            android:name="${applicationId}.entry.AppEntryActivity"
+            android:targetActivity="${entryActivity}">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
 
     </application>
 </manifest>

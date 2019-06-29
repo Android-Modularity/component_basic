@@ -42,6 +42,12 @@ public class ViewOpts {
         return new ViewOpts();
     }
 
+    public static ViewOpts withLayout(int layout) {
+        ViewOpts viewOpts = new ViewOpts();
+        viewOpts.layout = layout;
+        return viewOpts;
+    }
+
 
     public int getLayout() {
         return layout;

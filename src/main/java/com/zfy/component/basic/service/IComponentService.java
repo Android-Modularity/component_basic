@@ -19,15 +19,10 @@ public interface IComponentService extends IService {
 
 
     /**
-     * 组件名，将会作为判断入口重定向的标准
+     * 按照 priority 进行初始化
      *
-     * @return 组件名
+     * @param context
      */
-    String name();
-
-    /**
-     * 重定向
-     */
-    void redirect(Context context);
+    void initOrderly(Context context);
 
 }

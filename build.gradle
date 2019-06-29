@@ -2,6 +2,64 @@ apply from: '../scripts/module.gradle'
 //apply plugin: 'kotlin-android-extensions'
 //apply plugin: 'kotlin-android'
 
+def componentsPath = "${project.rootProject.rootDir.path}/components.gradle"
+
+if (new File(componentsPath).exists()) {
+    apply from: componentsPath
+}
+
+android {
+    defaultConfig {
+        if (project.hasProperty('entryComponent')) {
+            manifestPlaceholders.entryActivity = findComponentEntryActivity()
+        }
+        buildConfigField "String[]", "COMP_SERVICES", findComponentServices()
+    }
+}
+
+def getMyComps() {
+    try {
+        return comps
+    } catch (e) {
+        return []
+    }
+}
+
+def findComponentEntryActivity() {
+    String entryActivity = ''
+    if (project.hasProperty('entryComponent')) {
+        def defEntryComponent = project.entryComponent
+        def localComps = getMyComps()
+        if (defEntryComponent && defEntryComponent.length() > 0) {
+            for (def value : localComps) {
+                if (value.name != null && defEntryComponent == value.name) {
+                    entryActivity = value.entryActivity
+                    break
+                }
+            }
+        }
+    }
+    return entryActivity
+}
+
+def findComponentServices() {
+    String services = '{'
+    if (project.hasProperty('entryComponent')) {
+        def defEntryComponent = project.entryComponent
+        def localComps = getMyComps()
+        if (defEntryComponent && defEntryComponent.length() > 0) {
+            for (def value : localComps) {
+                if (value.compile && value.service != null && value.service.length() > 0) {
+                    services = "${services}\"${value.service}\","
+                }
+            }
+        }
+    }
+    services = services + '}'
+    return services
+}
+
+
 dependencies {
     // 基础库
     api deps.mantisApi
